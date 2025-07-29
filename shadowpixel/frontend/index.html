@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shadow Pixel</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .form-container {
+            margin-top: 50px;
+        }
+
+        input[type="file"],
+        input[type="text"] {
+            margin: 10px 0;
+            padding: 8px;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .response-box {
+            background-color: #333;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        footer {
+            margin-top: 50px;
+        }
+
+        footer img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+
+        footer p {
+            font-size: 14px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Shadow Pixel</h1>
+    <p>AI-powered portfolio website</p>
+
+    <div class="form-container">
+        <form id="resumeForm" enctype="multipart/form-data">
+            <label>Upload Resume (PDF/Text):</label><br>
+            <input type="file" name="resume" accept=".pdf,.txt" required><br>
+            <label>GitHub Username:</label><br>
+            <input type="text" name="github_username" required><br>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="response-box" id="response"></div>
+    </div>
+
+    <!-- ✅ Footer with logo -->
+    <footer>
+        <img src="static/logo.png" alt="Shadow Pixel Logo">
+        <p>© 2025 Shadow Pixel</p>
+    </footer>
+
+    <script>
+        const form = document.getElementById('resumeForm');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            const response = await fetch('http://127.0.0.1:8000/upload/', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            responseDiv.innerText = JSON.stringify(data, null, 2);
+        });
+    </script>
+
+</body>
+</html>

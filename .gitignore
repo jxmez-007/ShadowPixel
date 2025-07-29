@@ -1,0 +1,15 @@
+_pycache_/
+*.py[cod]
+
+media/
+*.sqlite3
+
+
+.vscode/
+
+.env
+backend/.env
+shadowpixel/frontend/.env
+
+*/migrations/
+*.log

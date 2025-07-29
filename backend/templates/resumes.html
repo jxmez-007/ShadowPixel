@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Uploaded Resumes</title>
+</head>
+<body>
+  <h2>All Uploaded Resumes</h2>
+  <ul>
+    {% for resume in resumes %}
+      <li>
+        <strong>{{ resume.resume_file.name|cut:"media/" }}</strong><br>
+        GitHub: {{ resume.github_username }}<br>
+        Summary: {{ resume.summary }}<br>
+        <a href="{{ resume.resume_file.url }}" download>Download</a>
+      </li>
+    {% empty %}
+      <li>No resumes uploaded yet.</li>
+    {% endfor %}
+  </ul>
+  <br>
+  <a href="/upload/">Upload Another</a>
+</body>
+</html>
