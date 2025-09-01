@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - ShadowPixel</title>
+    <meta name="description" content="Upload your resume for AI-powered GitHub analysis">
+    <meta name="keywords" content="upload resume, AI analysis, GitHub, ShadowPixel">
+    
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'css/upload.css' %}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- COMPLETE STYLES INCLUDING FORM -->
+    <style>
+        /* Critical missing styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        ul, ol, li {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        body {
+            background: radial-gradient(ellipse at center, #001133 0%, #000000 70%) !important;
+            color: white !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            min-height: 100vh !important;
+        }
+        
+        .navigation {
+            position: fixed !important;
+            top: 30px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(0, 0, 0, 0.8)) !important;
+            backdrop-filter: blur(25px) !important;
+            border: 1px solid rgba(0, 153, 255, 0.2) !important;
+            border-radius: 50px !important;
+            padding: 15px 35px !important;
+            z-index: 1000 !important;
+        }
+        
+        .nav-menu {
+            display: flex !important;
+            gap: 35px !important;
+            list-style: none !important;
+        }
+        
+        .nav-menu a {
+            color: rgba(255, 255, 255, 0.8) !important;
+            text-decoration: none !important;
+            font-weight: 500 !important;
+            font-size: 0.95rem !important;
+            padding: 10px 18px !important;
+            border-radius: 25px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .nav-menu a:hover {
+            color: #66ccff !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        .nav-menu a.active {
+            color: #0099ff !important;
+        }
+        
+        .main-title {
+            font-size: 4rem !important;
+            font-weight: 800 !important;
+            background: linear-gradient(135deg, #ffffff 0%, #66ccff 25%, #0099ff 50%, #0066cc 75%, #ffffff 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            margin-bottom: 30px !important;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin-bottom: 40px !important;
+            font-weight: 300 !important;
+        }
+        
+        /* FORM STYLES */
+        .upload-container {
+            min-height: 100vh !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 120px 20px 80px !important;
+            position: relative !important;
+            z-index: 2 !important;
+        }
+        
+        .upload-content {
+            max-width: 600px !important;
+            width: 100% !important;
+            text-align: center !important;
+            z-index: 2 !important;
+        }
+        
+        .upload-form {
+            background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(0, 0, 0, 0.6)) !important;
+            backdrop-filter: blur(25px) !important;
+            border: 1px solid rgba(0, 153, 255, 0.2) !important;
+            border-radius: 20px !important;
+            padding: 40px !important;
+            box-shadow: 0 20px 60px rgba(0, 153, 255, 0.1) !important;
+            margin-top: 30px !important;
+            text-align: left !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .form-group {
+            margin-bottom: 30px !important;
+            display: block !important;
+        }
+        
+        .input-label {
+            display: block !important;
+            margin-bottom: 10px !important;
+            color: white !important;
+            font-weight: 500 !important;
+            font-size: 1.1rem !important;
+        }
+        
+        .github-input {
+            width: 100% !important;
+            padding: 15px 20px !important;
+            border: 2px solid rgba(0, 153, 255, 0.3) !important;
+            border-radius: 12px !important;
+            background: rgba(0, 0, 0, 0.4) !important;
+            color: white !important;
+            font-size: 1rem !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .github-input:focus {
+            outline: none !important;
+            border-color: #0099ff !important;
+            box-shadow: 0 0 20px rgba(0, 153, 255, 0.3) !important;
+        }
+        
+        .github-input::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+        
+        .file-drop-zone {
+            border: 2px dashed rgba(0, 153, 255, 0.5) !important;
+            border-radius: 12px !important;
+            padding: 40px 20px !important;
+            text-align: center !important;
+            background: rgba(0, 0, 0, 0.3) !important;
+            cursor: pointer !important;
+            position: relative !important;
+            margin: 10px 0 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .file-drop-zone:hover {
+            border-color: #0099ff !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            box-shadow: 0 10px 30px rgba(0, 153, 255, 0.2) !important;
+        }
+        
+        .file-drop-zone .file-icon {
+            font-size: 3rem !important;
+            color: #0099ff !important;
+            margin-bottom: 15px !important;
+            display: block !important;
+        }
+        
+        .file-drop-zone p {
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin: 0 !important;
+            font-size: 1rem !important;
+        }
+        
+        .upload-submit-btn {
+            width: 100% !important;
+            padding: 18px 32px !important;
+            background: linear-gradient(135deg, #0099ff, #0066cc) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 12px !important;
+            font-size: 1.1rem !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            margin-top: 20px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .upload-submit-btn:hover {
+            background: linear-gradient(135deg, #66ccff, #0099ff) !important;
+            transform: translateY(-2px) scale(1.02) !important;
+            box-shadow: 0 15px 40px rgba(0, 153, 255, 0.5) !important;
+        }
+        
+        .help-text {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 0.9rem !important;
+            margin-top: 10px !important;
+        }
+        
+        .supported-formats {
+            background: rgba(0, 153, 255, 0.1) !important;
+            border: 1px solid rgba(0, 153, 255, 0.2) !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            margin-top: 30px !important;
+            text-align: center !important;
+        }
+        
+        .supported-formats h4 {
+            color: #66ccff !important;
+            margin-bottom: 10px !important;
+            font-size: 1.1rem !important;
+        }
+        
+        .supported-formats p {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 0.95rem !important;
+        }
+        
+        .file-upload-input {
+            position: absolute !important;
+            opacity: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            cursor: pointer !important;
+            top: 0 !important;
+            left: 0 !important;
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(0, 153, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #0099ff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .uploading .loading-spinner {
+            display: block;
+        }
+        
+        /* Create particles with CSS */
+        .particle-field::before,
+        .particle-field::after {
+            content: '';
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #0099ff;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        .particle-field::before {
+            top: 20%;
+            left: 10%;
+        }
+        
+        .particle-field::after {
+            top: 60%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); opacity: 0.3; }
+            50% { transform: translateY(-30px); opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="particle-field"></div>
+    <div class="geometric-bg">
+        <div class="geo-shape"></div>
+        <div class="geo-shape"></div>
+        <div class="geo-shape"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navigation" aria-label="Main navigation">
+        <ul class="nav-menu">
+            <li><a href="{% url 'resume:index' %}">Home</a></li>
+            <li><a href="{% url 'resume:upload_resume' %}" class="active">Upload</a></li>
+            <li><a href="{% url 'resume:uploaded_resumes' %}">Resumes</a></li>
+            <li><a href="{% url 'resume:statistics' %}">Stats</a></li>
+            <li><a href="{% url 'resume:help' %}">Help</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Upload Container -->
+    <div class="upload-container">
+        <div class="upload-content">
+            <h1 class="main-title">Upload Resume</h1>
+            <p class="hero-subtitle">Upload your resume and we'll extract key information and sync with your GitHub profile</p>
+            
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="upload-message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Upload Form -->
+            <form method="post" enctype="multipart/form-data" class="upload-form" autocomplete="off">
+                {% csrf_token %}
+                
+                <!-- GitHub Username Input -->
+                <div class="form-group">
+                    <label for="github" class="input-label">GitHub Username</label>
+                    <input type="text" 
+                           id="github" 
+                           name="github" 
+                           required 
+                           class="github-input"
+                           placeholder="Enter your GitHub username"
+                           pattern="^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$" 
+                           maxlength="39" 
+                           autocomplete="off">
+                    <small class="help-text">Must be a valid GitHub username (1-39 characters)</small>
+                </div>
+
+                <!-- File Upload Section -->
+                <div class="file-upload-section">
+                    <div class="form-group">
+                        <label for="resume" class="input-label">Resume File</label>
+                        <div class="file-drop-zone">
+                            <div class="file-icon">📄</div>
+                            <p>Choose Your Resume File</p>
+                            <input type="file" 
+                                   id="resume" 
+                                   name="resume" 
+                                   accept=".pdf,.docx,.txt" 
+                                   required 
+                                   class="file-upload-input">
+                        </div>
+                        <small class="help-text">Supported formats: PDF, DOCX, TXT (Max 5MB)</small>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="upload-submit-btn">
+                    <span>📤 Upload</span>
+                </button>
+
+                <!-- Loading Elements -->
+                <div class="loading-spinner"></div>
+            </form>
+
+            <!-- Supported Formats Info -->
+            <div class="supported-formats">
+                <h4>Supported File Formats</h4>
+                <p>PDF, Microsoft Word (DOCX), and Plain Text (TXT) files are supported. Maximum file size is 5MB.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Enhanced particle generation
+            const particleField = document.querySelector('.particle-field');
+            for(let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.position = 'fixed';
+                p.style.top = `${Math.random() * 100}%`;
+                p.style.left = `${Math.random() * 100}%`;
+                const size = Math.random() * 6 + 2;
+                p.style.width = `${size}px`;
+                p.style.height = `${size}px`;
+                p.style.background = '#0099ff';
+                p.style.borderRadius = '50%';
+                p.style.animationDelay = `${Math.random() * 6}s`;
+                p.style.animation = 'float 6s ease-in-out infinite';
+                p.style.zIndex = '-1';
+                particleField.appendChild(p);
+            }
+
+            // Form and drag-drop functionality
+            const form = document.querySelector('.upload-form');
+            const submitBtn = document.querySelector('.upload-submit-btn');
+            const spinner = document.querySelector('.loading-spinner');
+            const fileDropZone = document.querySelector('.file-drop-zone');
+            const fileInput = document.querySelector('.file-upload-input');
+
+            if (form && submitBtn) {
+                form.addEventListener('submit', (e) => {
+                    form.classList.add('uploading');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span>⏳ Uploading...</span>';
+                    if (spinner) spinner.style.display = 'block';
+                });
+            }
+
+            if (fileDropZone && fileInput) {
+                fileDropZone.addEventListener('click', () => fileInput.click());
+
+                fileDropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    fileDropZone.style.borderColor = '#66ccff';
+                    fileDropZone.style.background = 'rgba(0, 153, 255, 0.1)';
+                });
+
+                fileDropZone.addEventListener('dragleave', () => {
+                    fileDropZone.style.borderColor = 'rgba(0, 153, 255, 0.5)';
+                    fileDropZone.style.background = 'rgba(0, 0, 0, 0.3)';
+                });
+
+                fileDropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    fileDropZone.style.borderColor = 'rgba(0, 153, 255, 0.5)';
+                    fileDropZone.style.background = 'rgba(0, 0, 0, 0.3)';
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        updateFileDisplay(files[0]);
+                    }
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        updateFileDisplay(e.target.files[0]);
+                    }
+                });
+            }
+
+            function updateFileDisplay(file) {
+                const fileIcon = fileDropZone.querySelector('.file-icon');
+                const fileParagraph = fileDropZone.querySelector('p');
+                
+                fileParagraph.textContent = `Selected: ${file.name}`;
+                fileIcon.textContent = getFileIcon(file.name);
+            }
+
+            function getFileIcon(filename) {
+                const extension = filename.split('.').pop().toLowerCase();
+                switch(extension) {
+                    case 'pdf': return '📄';
+                    case 'docx': return '📝';
+                    case 'txt': return '📋';
+                    default: return '📄';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

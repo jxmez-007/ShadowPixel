@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ error_code }} - {{ error_message }} - ShadowPixel</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="main-title">{{ error_code }}</h1>
+            <div class="upload-section">
+                <div class="form-card">
+                    <h2>{{ error_message }}</h2>
+                    <p>{{ error_description }}</p>
+                    <div class="action-buttons" style="margin-top: 30px;">
+                        <a href="{% url 'resume:index' %}" class="btn-primary">
+                            🏠 Go Home
+                        </a>
+                        <a href="javascript:history.back()" class="btn-secondary">
+                            ← Go Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

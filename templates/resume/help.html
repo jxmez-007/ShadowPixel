@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - ShadowPixel</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <nav class="navigation">
+        <ul class="nav-menu">
+            <li><a href="{% url 'resume:index' %}">Home</a></li>
+            <li><a href="{% url 'resume:upload_resume' %}">Upload</a></li>
+            <li><a href="{% url 'resume:uploaded_resumes' %}">Resumes</a></li>
+            <li><a href="{% url 'resume:statistics' %}">Stats</a></li>
+            <li><a href="{% url 'resume:help' %}">Help</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="main-title">Help & Documentation</h1>
+            
+            <div class="upload-section">
+                <div class="form-card">
+                    <h2>How to Use ShadowPixel</h2>
+                    
+                    <h3>Uploading a Resume</h3>
+                    <ul>
+                        <li>Go to the Upload page</li>
+                        <li>Enter your GitHub username</li>
+                        <li>Select your resume file (PDF, DOCX, or TXT)</li>
+                        <li>Click "Upload Resume"</li>
+                    </ul>
+                    
+                    <h3>Supported File Types</h3>
+                    <ul>
+                        <li><strong>PDF:</strong> Portable Document Format files</li>
+                        <li><strong>DOCX:</strong> Microsoft Word documents</li>
+                        <li><strong>TXT:</strong> Plain text files</li>
+                    </ul>
+                    
+                    <h3>File Requirements</h3>
+                    <ul>
+                        <li>Maximum file size: 5MB</li>
+                        <li>GitHub username must be valid (1-39 characters)</li>
+                        <li>Only alphanumeric characters and hyphens allowed in username</li>
+                    </ul>
+                    
+                    <h3>Features</h3>
+                    <ul>
+                        <li>AI-powered resume analysis</li>
+                        <li>GitHub profile integration</li>
+                        <li>Resume text extraction</li>
+                        <li>Statistical tracking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

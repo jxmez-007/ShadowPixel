@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resume Details</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background: #1a1a1a; 
+            color: white; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+        }
+        .info-box { 
+            background: #2a2a2a; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+        }
+        .btn { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            margin: 10px 5px 0 0; 
+        }
+        .btn:hover { 
+            background: #0056b3; 
+        }
+        nav { 
+            background: #333; 
+            padding: 10px 0; 
+            margin-bottom: 30px; 
+        }
+        nav ul { 
+            list-style: none; 
+            margin: 0; 
+            padding: 0; 
+            text-align: center; 
+        }
+        nav li { 
+            display: inline-block; 
+            margin: 0 15px; 
+        }
+        nav a { 
+            color: white; 
+            text-decoration: none; 
+            padding: 8px 15px; 
+            border-radius: 4px; 
+        }
+        nav a:hover { 
+            background: #555; 
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/upload/">Upload</a></li>
+            <li><a href="/resumes/">Resumes</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Resume Details</h1>
+        
+        {% if resume %}
+            <div class="info-box">
+                <h2>Resume Information</h2>
+                <p><strong>Resume ID:</strong> {{ resume.pk }}</p>
+                
+                {% if resume.github_username %}
+                    <p><strong>GitHub Username:</strong> 
+                        <a href="https://github.com/{{ resume.github_username }}" target="_blank" style="color: #007bff;">
+                            {{ resume.github_username }}
+                        </a>
+                    </p>
+                {% endif %}
+                
+                {% if resume.file %}
+                    <p><strong>File:</strong> 
+                        <a href="{{ resume.file.url }}" style="color: #007bff;" target="_blank">
+                            {{ resume.file.name }}
+                        </a>
+                    </p>
+                {% endif %}
+                
+                <p><strong>Upload Date:</strong> {{ resume.created_at|date:"F d, Y H:i" }}</p>
+                
+                {% if resume.status %}
+                    <p><strong>Status:</strong> {{ resume.status }}</p>
+                {% endif %}
+            </div>
+            
+            {% if resume.full_name or resume.email %}
+            <div class="info-box">
+                <h3>Contact Information</h3>
+                {% if resume.full_name %}
+                    <p><strong>Name:</strong> {{ resume.full_name }}</p>
+                {% endif %}
+                {% if resume.email %}
+                    <p><strong>Email:</strong> 
+                        <a href="mailto:{{ resume.email }}" style="color: #007bff;">
+                            {{ resume.email }}
+                        </a>
+                    </p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+        {% else %}
+            <div class="info-box">
+                <h2>Resume Not Found</h2>
+                <p>No resume found with ID: {{ pk }}</p>
+            </div>
+        {% endif %}
+        
+        <a href="/resumes/" class="btn">← Back to Resume List</a>
+        <a href="/" class="btn">🏠 Home</a>
+    </div>
+</body>
+</html>

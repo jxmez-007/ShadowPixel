@@ -13,3 +13,8 @@ shadowpixel/frontend/.env
 
 */migrations/
 *.log
+
+# .gitignore
+.env
+*.pyc
+__pycache__/

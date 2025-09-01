@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GitHub Summary</title>
+    <style>
+        body{
+            background: #121212;
+            color:#ffffff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+        .typing-text{
+            border-right: 2px solid #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 4s steps(60, end),blink 0.75s step-end infinite;
+            font-size: 20px;
+            max-width: 80vw;
+        }
+
+        @keyframes typing{
+            from{ width:0}
+            to { width:100% }
+        }
+        
+        @keyframes blink{
+            from,to {border-color: transparent}
+            50% {border-color: #fff;}
+        }
+        </style>
+</head>
+<body>
+    <h2>summary for {{github }}</h2>
+    <p class="typing-text"{{summary}}</p>
+</body>
+</html>

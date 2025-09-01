@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadowPixel</title>
+    
+    <!-- Load Django static files -->
+    {% load static %}
+    
+    <!-- Add your SP favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    
+    <!-- Your CSS files -->
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header>
+        <h1>ShadowPixel</h1>
+    </header>
+
+    <!-- Main content area -->
+    <main>
+        {% block content %}
+        <!-- Page content goes here -->
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 ShadowPixel</p>
+    </footer>
+</body>
+</html>

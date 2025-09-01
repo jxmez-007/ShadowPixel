@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumes List - ShadowPixel</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <nav class="navigation">
+        <ul class="nav-menu">
+            <li><a href="{% url 'resume:index' %}">Home</a></li>
+            <li><a href="{% url 'resume:upload_resume' %}">Upload</a></li>
+            <li><a href="{% url 'resume:uploaded_resumes' %}">Resumes</a></li>
+            <li><a href="{% url 'resume:statistics' %}">Stats</a></li>
+            <li><a href="{% url 'resume:help' %}">Help</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="main-title">Uploaded Resumes</h1>
+            
+            {% if resumes %}
+                <div class="upload-section">
+                    <div class="form-card">
+                        {% for resume in resumes %}
+                            <div style="padding: 15px; margin: 10px 0; background: rgba(0,153,255,0.05); border-radius: 10px;">
+                                <h3>{{ resume.github_username }}</h3>
+                                <p>File: {{ resume.original_filename }}</p>
+                                <p>Status: {{ resume.status|default:"Uploaded" }}</p>
+                                <p>Date: {{ resume.created_at|date:"M d, Y H:i"|default:"Recently" }}</p>
+                                <a href="{% url 'resume:resume_detail' resume.pk %}" class="btn-secondary">View Details</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="upload-section">
+                    <div class="form-card">
+                        <p>No resumes uploaded yet.</p>
+                        <a href="{% url 'resume:upload_resume' %}" class="btn-primary">
+                            <span>📤</span> Upload First Resume
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
