@@ -1,25 +1,17 @@
 # ShadowPixel 🎯
 
-ShadowPixel is a Django-based web app that allows users to:
-- Upload their resume (PDF format)
+ShadowPixel is a Django-based AI-powered resume analysis system that allows users to:
+- Upload their resume (PDF, DOCX, or TXT format)
 - Enter their GitHub username
-- Generate a smart AI summary of their GitHub activity using OpenAI
+- Generate intelligent AI summaries using OpenAI and GitHub data
+- Get comprehensive insights about their coding profile
 
 ---
 
-## 🔧 Features
+## ✨ Features
 
-- Resume upload via web interface
-- GitHub username integration
-- AI-generated professional summary using OpenAI
-- Resume + summary storage with Django ORM
-- Clean frontend with HTML/CSS
-
----
-
-## 🚀 How to Run Locally
-
-1. *Clone the repo*  
-```bash
-git clone https://github.com/jxmez-007/ShadowPixel.git
-cd ShadowPixel/shadowpixel
+- **Resume Upload & Analysis**: Support for PDF, DOCX, and TXT formats
+- **GitHub Integration**: Fetches user profile and repository data
+- **AI-Powered Insights**: Uses OpenAI to generate intelligent summaries
+- **Beautiful UI**: Modern, responsive design with glassmorphic effects
+- **Real-time Processing**: Live status updates for analysis
