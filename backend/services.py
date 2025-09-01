@@ -9,35 +9,45 @@ from datetime import datetime
 from typing import Tuple, Dict, Any, List
 import logging
 
+# PDF processing with PyMuPDF
 try:
     import fitz  # PyMuPDF
     PYMUPDF_AVAILABLE = True
 except ImportError:
     PYMUPDF_AVAILABLE = False
 
+# DOCX processing with python-docx
 try:
     from docx import Document
     DOCX_AVAILABLE = True
 except ImportError:
     DOCX_AVAILABLE = False
 
+# OpenAI integration
+try:
+    import openai
+    import os
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
+
 
 class TextExtractionService:
     """Service for extracting text from various file formats."""
     
     @staticmethod
     def extract_pdf_text(file_path: str) -> Tuple[str, bool]:
-        """Extract text from PDF file."""
+        """Extract text from PDF file using PyMuPDF."""
         if not PYMUPDF_AVAILABLE:
-            return "PDF processing not available", False
+            return "PDF processing not available - install PyMuPDF: pip install PyMuPDF", False
         
         try:
             text_parts = []
             with fitz.open(file_path) as doc:
-                for page_num in range(len(doc)):
-                    page = doc[page_num]
-                    page_text = page.get_text()
+                for page in doc:
+                    page_text = page.get_text() # type: ignore
                     if page_text.strip():
                         text_parts.append(page_text.strip())
             
@@ -49,20 +59,20 @@ class TextExtractionService:
     
     @staticmethod
     def extract_docx_text(file_path: str) -> Tuple[str, bool]:
-        """Extract text from DOCX file."""
+        """Extract text from DOCX file including headers, footers, and tables."""
         if not DOCX_AVAILABLE:
-            return "DOCX processing not available", False
+            return "DOCX processing not available - install python-docx: pip install python-docx", False
         
         try:
             doc = Document(file_path)
             text_parts = []
             
-            # Extract paragraphs
+            # Extract from paragraphs
             for paragraph in doc.paragraphs:
                 if paragraph.text.strip():
                     text_parts.append(paragraph.text.strip())
             
-            # Extract tables
+            # Extract from tables
             for table in doc.tables:
                 for row in table.rows:
                     row_text = []
@@ -72,15 +82,34 @@ class TextExtractionService:
                     if row_text:
                         text_parts.append(" | ".join(row_text))
             
+            # Extract from headers and footers
+            for section in doc.sections:
+                # Headers
+                header = section.header
+                for para in header.paragraphs:
+                    if para.text.strip():
+                        text_parts.append(para.text.strip())
+                
+                # Footers
+                footer = section.footer
+                for para in footer.paragraphs:
+                    if para.text.strip():
+                        text_parts.append(para.text.strip())
+            
             full_text = "\n".join(text_parts)
-            return full_text, bool(full_text.strip())
+            
+            if len(full_text.strip()) > 10:  # Minimum text requirement
+                return full_text, True
+            else:
+                return "No extractable text found. File may contain images or unsupported formatting.", False
+                
         except Exception as e:
             logger.error(f"Error extracting DOCX text: {e}")
             return f"Error reading DOCX: {str(e)}", False
     
     @staticmethod
     def extract_txt_text(file_path: str) -> Tuple[str, bool]:
-        """Extract text from TXT file."""
+        """Extract text from TXT file with multiple encoding support."""
         encodings = ['utf-8', 'utf-8-sig', 'latin-1', 'cp1252']
         
         for encoding in encodings:
@@ -94,7 +123,7 @@ class TextExtractionService:
                 logger.error(f"Error reading TXT file: {e}")
                 return f"Error reading TXT: {str(e)}", False
         
-        return "Could not decode text file", False
+        return "Could not decode text file with any supported encoding", False
     
     @classmethod
     def extract_text(cls, file_path: str, file_extension: str) -> Tuple[str, bool]:
@@ -102,24 +131,50 @@ class TextExtractionService:
         extraction_functions = {
             '.pdf': cls.extract_pdf_text,
             '.docx': cls.extract_docx_text,
+            '.doc': cls.extract_docx_text,  # Treat .doc as .docx
             '.txt': cls.extract_txt_text,
         }
         
         extraction_func = extraction_functions.get(file_extension.lower())
         if not extraction_func:
-            return f"Unsupported file type: {file_extension}", False
+            return f"Unsupported file type: {file_extension}. Supported: PDF, DOCX, TXT", False
         
         return extraction_func(file_path)
 
+
 class ResumeAnalysisService:
-    """Service for analyzing resume content."""
+    """Service for analyzing resume content with AI."""
     
     @staticmethod
     def generate_summary(text: str, max_length: int = 500) -> str:
-        """Generate a summary from extracted text."""
+        """Generate AI-powered summary using OpenAI or fallback to basic summary."""
         if not text or len(text.strip()) == 0:
             return "No content available for summary"
         
+        # Try OpenAI first
+        if OPENAI_AVAILABLE and os.getenv('OPENAI_API_KEY'):
+            try:
+                client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[{
+                        "role": "user",
+                        "content": f"Summarize this resume in 2-3 professional sentences highlighting key qualifications and experience:\n\n{text[:3000]}"
+                    }],
+                    max_tokens=150,
+                    temperature=0.7
+                )
+                return response.choices[0].message.content.strip() # type: ignore
+            except Exception as e:
+                logger.error(f"OpenAI summary generation failed: {e}")
+                # Fall back to basic summary
+        
+        # Basic fallback summary
+        return ResumeAnalysisService._basic_summary(text, max_length)
+    
+    @staticmethod
+    def _basic_summary(text: str, max_length: int) -> str:
+        """Generate basic summary without AI."""
         cleaned_text = ' '.join(text.split())
         
         if len(cleaned_text) <= max_length:
@@ -153,7 +208,7 @@ class ResumeAnalysisService:
     @staticmethod
     def extract_contact_info(text: str) -> Dict[str, Any]:
         """Extract contact information from resume text."""
-        info = {"email": None, "phone": None}
+        info = {"email": None, "phone": None, "name": None}
         
         # Extract email
         email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
@@ -171,8 +226,18 @@ class ResumeAnalysisService:
             phone_matches = re.findall(pattern, text)
             if phone_matches:
                 if len(phone_matches[0]) == 3:
-                    info["phone"] = f"({phone_matches[0][0]}) {phone_matches[0][1]}-{phone_matches[0][2]}"
+                    info["phone"] = f"({phone_matches[0][0]}) {phone_matches[0][1]}-{phone_matches[0][2]}" # type: ignore
                 break
+        
+        # Extract name (first line that looks like a name)
+        lines = text.split('\n')
+        for line in lines[:5]:  # Check first 5 lines
+            line = line.strip()
+            if line and len(line.split()) >= 2 and len(line) < 50:
+                # Simple heuristic: 2+ words, not too long, not email/phone
+                if '@' not in line and not re.search(r'\d{3}', line):
+                    info["name"] = line # type: ignore
+                    break
         
         return info
     
@@ -180,10 +245,24 @@ class ResumeAnalysisService:
     def extract_skills(text: str) -> List[str]:
         """Extract technical skills from resume text."""
         skill_keywords = [
+            # Programming Languages
             'python', 'java', 'javascript', 'typescript', 'c++', 'c#', 'php', 'ruby',
-            'react', 'angular', 'vue.js', 'node.js', 'django', 'flask', 'fastapi',
-            'mysql', 'postgresql', 'mongodb', 'redis', 'aws', 'azure', 'docker',
-            'kubernetes', 'git', 'linux', 'machine learning', 'data science'
+            'go', 'rust', 'swift', 'kotlin', 'scala', 'r', 'matlab', 'sql',
+            
+            # Web Technologies
+            'react', 'angular', 'vue.js', 'node.js', 'express', 'django', 'flask',
+            'fastapi', 'spring', 'laravel', 'rails', 'html', 'css', 'sass', 'bootstrap',
+            
+            # Databases
+            'mysql', 'postgresql', 'mongodb', 'redis', 'sqlite', 'oracle', 'cassandra',
+            
+            # Cloud & DevOps
+            'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'jenkins', 'terraform',
+            'ansible', 'chef', 'puppet',
+            
+            # Tools & Others
+            'git', 'linux', 'unix', 'bash', 'powershell', 'nginx', 'apache',
+            'machine learning', 'data science', 'artificial intelligence', 'blockchain'
         ]
         
         text_lower = text.lower()
@@ -193,7 +272,9 @@ class ResumeAnalysisService:
             if skill in text_lower:
                 found_skills.append(skill.title())
         
+        # Remove duplicates and limit to 15
         return list(dict.fromkeys(found_skills))[:15]
+
 
 class GitHubService:
     """Service for GitHub API integration."""
@@ -203,12 +284,22 @@ class GitHubService:
         """Fetch GitHub user profile data."""
         try:
             url = f"https://api.github.com/users/{username}"
-            response = requests.get(url, timeout=10)
+            headers = {'User-Agent': 'ShadowPixel-Resume-Analyzer'}
+            
+            # Add GitHub token if available
+            github_token = os.getenv('GITHUB_TOKEN')
+            if github_token:
+                headers['Authorization'] = f'token {github_token}'
+            
+            response = requests.get(url, headers=headers, timeout=10)
             
             if response.status_code == 200:
                 return response.json(), True
             else:
-                return {"error": f"GitHub API returned {response.status_code}"}, False
+                error_msg = f"GitHub API returned {response.status_code}"
+                if response.status_code == 403:
+                    error_msg += " (Rate limited - consider adding GITHUB_TOKEN)"
+                return {"error": error_msg}, False
                 
         except requests.RequestException as e:
             logger.error(f"Error fetching GitHub profile for {username}: {e}")
@@ -219,8 +310,15 @@ class GitHubService:
         """Fetch user's public repositories."""
         try:
             url = f"https://api.github.com/users/{username}/repos"
+            headers = {'User-Agent': 'ShadowPixel-Resume-Analyzer'}
             params = {"sort": "updated", "per_page": limit}
-            response = requests.get(url, params=params, timeout=10)
+            
+            # Add GitHub token if available
+            github_token = os.getenv('GITHUB_TOKEN')
+            if github_token:
+                headers['Authorization'] = f'token {github_token}'
+            
+            response = requests.get(url, headers=headers, params=params, timeout=10)
             
             if response.status_code == 200:
                 repos = response.json()
@@ -232,7 +330,8 @@ class GitHubService:
                         "language": repo.get("language", ""),
                         "stars": repo["stargazers_count"],
                         "forks": repo["forks_count"],
-                        "updated_at": repo["updated_at"]
+                        "updated_at": repo["updated_at"],
+                        "url": repo["html_url"]
                     })
                 return simplified_repos, True
             else:

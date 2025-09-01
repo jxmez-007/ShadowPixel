@@ -70,7 +70,6 @@ except ImportError:
         def get_user_repositories(username: str) -> tuple[list, bool]:
             return [], False
 
-
 def validate_github_username(username: str) -> bool:
     """Validate GitHub username format according to GitHub rules."""
     if not username or len(username) > 39:
@@ -85,7 +84,6 @@ def validate_github_username(username: str) -> bool:
     pattern = r'^[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]$'
     return bool(re.match(pattern, username))
 
-
 def validate_file_security(filename: str) -> bool:
     """Validate filename for security issues."""
     if not filename:
@@ -93,7 +91,6 @@ def validate_file_security(filename: str) -> bool:
     
     dangerous_patterns = ['..', '/', '\\', '~', '<', '>', ':', '"', '|', '?', '*']
     return not any(pattern in filename for pattern in dangerous_patterns)
-
 
 def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
     """Process a resume using your existing services and models"""
@@ -275,7 +272,6 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
                 pass
         return False, f"Processing failed: {str(e)}"
 
-
 def process_resume_async(resume_id: int) -> None:
     """Process a resume in background: extract text and sync GitHub data."""
     if not SERVICES_AVAILABLE or Resume is None or ResumeProcessingLog is None:
@@ -409,7 +405,6 @@ def process_resume_async(resume_id: int) -> None:
             except Exception:
                 pass
 
-
 # Main views (enhanced versions)
 def index(request):
     """Home page with dashboard overview."""
@@ -437,10 +432,9 @@ def index(request):
         context = {'stats': {}, 'recent_resumes': []}
         return render(request, 'resume/index.html', context)
 
-
 @require_http_methods(["GET", "POST"])
 def upload_resume(request):
-    """Handle resume upload with enhanced processing."""
+    """Handle resume upload with enhanced processing - FIXED VERSION."""
     if request.method == 'GET':
         # Show the upload form
         context = {
@@ -487,14 +481,14 @@ def upload_resume(request):
                 messages.error(request, f'File type not allowed. Supported types: {", ".join(allowed_extensions)}')
                 return render(request, 'resume/upload.html')
             
-            # Create Resume record if model exists
+            # Create Resume record if model exists - FIXED: removed file_extension assignment
             if Resume is not None:
                 resume_obj = Resume.objects.create(
                     github_username=github_username,
-                    resume_file=resume_file,  # Let Django handle the file saving
+                    resume_file=resume_file,  # Django handles the file saving
                     original_filename=resume_file.name,
                     file_size=resume_file.size,
-                    file_extension=file_extension,
+                    # ✅ FIXED: Removed file_extension assignment - it's a read-only property
                     status='pending'
                 )
                 
@@ -529,6 +523,8 @@ def upload_resume(request):
             messages.error(request, f'Upload failed: {str(e)}')
             return render(request, 'resume/upload.html')
 
+# Keep all the rest of your views exactly as they are...
+# [Rest of your views remain unchanged]
 
 def uploaded_resumes(request):
     """Display list of uploaded resumes with filtering."""
@@ -573,7 +569,6 @@ def uploaded_resumes(request):
     
     return render(request, 'resume/resumes_list.html', context)
 
-
 def resume_detail(request, pk):
     """Display detailed view of a specific resume with processing info."""
     if Resume is None:
@@ -602,6 +597,7 @@ def resume_detail(request, pk):
     except Exception:
         return render(request, 'resume/resume_detail.html', {'resume': None, 'pk': pk})
 
+# [Continue with all your other views exactly as they are...]
 
 def statistics(request):
     """Display comprehensive system statistics."""
@@ -639,7 +635,6 @@ def statistics(request):
     
     return render(request, 'resume/statistics.html', context)
 
-
 def resume_text(request, pk):
     """Display extracted text from resume."""
     if Resume is None:
@@ -655,7 +650,6 @@ def resume_text(request, pk):
     }
     
     return render(request, 'resume/resume_text.html', context)
-
 
 def resume_processing_logs(request, pk):
     """Display processing logs for a resume."""
@@ -676,7 +670,6 @@ def resume_processing_logs(request, pk):
     }
     
     return render(request, 'resume/processing_logs.html', context)
-
 
 def resume_github_sync(request, pk):
     """Manually trigger GitHub sync for a resume."""
@@ -709,7 +702,6 @@ def resume_github_sync(request, pk):
     
     return redirect('resume:resume_detail', pk=pk)
 
-
 def reprocess_resume(request, pk):
     """Manually reprocess a resume."""
     if Resume is None or not SERVICES_AVAILABLE:
@@ -737,7 +729,6 @@ def reprocess_resume(request, pk):
     
     return redirect('resume:resume_detail', pk=pk)
 
-
 def help_page(request):
     """Display help and documentation."""
     context = {
@@ -746,11 +737,11 @@ def help_page(request):
     }
     return render(request, 'resume/help.html', context)
 
+# [Keep all other views unchanged]
 
 def dashboard(request):
     """Dashboard view."""
     return redirect('resume:index')
-
 
 def edit_resume(request, pk):
     """Edit resume details."""
@@ -759,7 +750,6 @@ def edit_resume(request, pk):
     
     resume = get_object_or_404(Resume, pk=pk)
     return render(request, 'resume/edit_resume.html', {'resume': resume})
-
 
 def delete_resume(request, pk):
     """Delete resume."""
@@ -774,7 +764,6 @@ def delete_resume(request, pk):
         return redirect('resume:uploaded_resumes')
     
     return render(request, 'resume/delete_confirm.html', {'resume': resume})
-
 
 def download_resume(request, pk):
     """Download resume file."""
@@ -793,7 +782,6 @@ def download_resume(request, pk):
     else:
         messages.error(request, 'Resume file not found.')
         return redirect('resume:resume_detail', pk=pk)
-
 
 def search_resumes(request):
     """Enhanced search resumes."""
@@ -815,7 +803,6 @@ def search_resumes(request):
     
     return render(request, 'resume/search_results.html', context)
 
-
 def github_profile(request, username):
     """Display GitHub profile integration."""
     context = {'username': username}
@@ -831,7 +818,6 @@ def github_profile(request, username):
     
     return render(request, 'resume/github_profile.html', context)
 
-
 def summary_page(request):
     """Display summary page."""
     context = {}
@@ -844,17 +830,14 @@ def summary_page(request):
     
     return render(request, 'resume/summary.html', context)
 
-
 def about(request):
     """About page."""
     return render(request, 'resume/about.html')
-
 
 # FIXED: Added the missing settings function that matches your URL pattern
 def settings(request):
     """Settings page."""
     return render(request, 'resume/settings.html')
-
 
 # API endpoints (enhanced)
 def api_resumes_list(request):
@@ -887,7 +870,6 @@ def api_resumes_list(request):
     
     return JsonResponse({'resumes': resume_data})
 
-
 def health_check(request):
     """Enhanced system health check."""
     return JsonResponse({
@@ -899,7 +881,6 @@ def health_check(request):
         'processing_queue': Resume.objects.filter(status='processing').count() if Resume is not None else 0,
     })
 
-
 # Error handler views
 def error_404(request, exception):
     """Custom 404 error page"""
@@ -910,7 +891,6 @@ def error_404(request, exception):
     }
     return render(request, 'resume/error.html', context, status=404)
 
-
 def error_500(request):
     """Custom 500 error page"""
     context = {
@@ -920,95 +900,72 @@ def error_500(request):
     }
     return render(request, 'resume/error.html', context, status=500)
 
-
 # Keep all remaining placeholder views as they are
 def processing_queue(request):
     return HttpResponse("Processing queue - Not implemented yet")
 
-
 def filter_resumes(request):
     return HttpResponse("Filter resumes - Not implemented yet")
-
 
 def resumes_by_status(request, status):
     return HttpResponse(f"Resumes by status: {status} - Not implemented yet")
 
-
 def resumes_by_skill(request, skill):
     return HttpResponse(f"Resumes by skill: {skill} - Not implemented yet")
-
 
 def bulk_actions(request):
     return HttpResponse("Bulk actions - Not implemented yet")
 
-
 def bulk_delete(request):
     return HttpResponse("Bulk delete - Not implemented yet")
-
 
 def bulk_process(request):
     return HttpResponse("Bulk process - Not implemented yet")
 
-
 def reports(request):
     return HttpResponse("Reports - Not implemented yet")
-
 
 def analytics(request):
     return HttpResponse("Analytics - Not implemented yet")
 
-
 def export_resumes(request):
     return HttpResponse("Export resumes - Not implemented yet")
-
 
 def export_csv(request):
     return HttpResponse("Export CSV - Not implemented yet")
 
-
 def export_json(request):
     return HttpResponse("Export JSON - Not implemented yet")
-
 
 def export_pdf_report(request):
     return HttpResponse("Export PDF report - Not implemented yet")
 
-
 def user_preferences(request):
     return HttpResponse("User preferences - Not implemented yet")
-
 
 def resume_summary(request, pk):
     return HttpResponse(f"Resume summary {pk} - Not implemented yet")
 
-
 def resume_analysis(request, pk):
     return HttpResponse(f"Resume analysis {pk} - Not implemented yet")
-
 
 def resume_status(request, pk):
     return HttpResponse(f"Resume status {pk} - Not implemented yet")
 
-
 def api_resume_detail(request, pk):
     return JsonResponse({'message': f'API resume detail {pk} - Not implemented yet'})
-
 
 def api_upload_resume(request):
     return JsonResponse({'message': 'API upload resume - Not implemented yet'})
 
-
 def api_search_resumes(request):
     return JsonResponse({'message': 'API search resumes - Not implemented yet'})
-
 
 def api_statistics(request):
     return JsonResponse({'message': 'API statistics - Not implemented yet'})
 
-
 def metrics(request):
     return JsonResponse({'message': 'Metrics - Not implemented yet'})
-
 
 def system_status(request):
     return JsonResponse({'message': 'System status - Not implemented yet'})
