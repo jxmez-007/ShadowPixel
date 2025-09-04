@@ -2,42 +2,357 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GitHub Summary</title>
-    <style>
-        body{
-            background: #121212;
-            color:#ffffff;
-            font-family: 'Courier New', monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            padding: 20px;
-            text-align: center;
-        }
-        .typing-text{
-            border-right: 2px solid #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            animation: typing 4s steps(60, end),blink 0.75s step-end infinite;
-            font-size: 20px;
-            max-width: 80vw;
-        }
-
-        @keyframes typing{
-            from{ width:0}
-            to { width:100% }
-        }
-        
-        @keyframes blink{
-            from,to {border-color: transparent}
-            50% {border-color: #fff;}
-        }
-        </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Summary - {{ github_username }} - ShadowPixel</title>
+    <meta name="description" content="AI-powered GitHub profile analysis and insights for {{ github_username }}">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/summary.css' %}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h2>summary for {{github }}</h2>
-    <p class="typing-text"{{summary}}</p>
+    <!-- Animated background -->
+    <div class="particle-field">
+        <div class="particle" style="top: 20%; left: 10%; width: 3px; height: 3px; animation-delay: 0s;"></div>
+        <div class="particle" style="top: 50%; left: 80%; width: 4px; height: 4px; animation-delay: 2s;"></div>
+        <div class="particle" style="top: 80%; left: 30%; width: 2px; height: 2px; animation-delay: 4s;"></div>
+        <div class="particle" style="top: 30%; left: 70%; width: 3px; height: 3px; animation-delay: 1s;"></div>
+        <div class="particle" style="top: 70%; left: 50%; width: 3px; height: 3px; animation-delay: 3s;"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-header">
+        <div class="nav-brand">
+            <span class="brand-icon">🚀</span>
+            <span class="brand-text">ShadowPixel</span>
+        </div>
+        <div class="nav-actions">
+            <a href="{% url 'resume:index' %}" class="nav-btn">
+                <span class="nav-icon">🏠</span> Home
+            </a>
+            <a href="{% url 'resume:uploaded_resumes' %}" class="nav-btn">
+                <span class="nav-icon">📄</span> Resumes
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="summary-container">
+        <!-- Header Section -->
+        <div class="summary-header">
+            <div class="profile-section">
+                <div class="profile-avatar">
+                    <img src="https://github.com/{{ github_username }}.png" alt="{{ github_username }}" onerror="this.src='{% static 'images/default-avatar.png' %}'">
+                    <div class="profile-badge">
+                        <span class="badge-icon">⚡</span>
+                        <span class="badge-text">AI Analyzed</span>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-title">GitHub Analysis</h1>
+                    <div class="profile-username">
+                        <span class="username-icon">👤</span>
+                        <a href="https://github.com/{{ github_username }}" target="_blank" rel="noopener noreferrer" class="username-link">
+                            @{{ github_username }}
+                        </a>
+                        <span class="external-icon">🔗</span>
+                    </div>
+                    <div class="analysis-meta">
+                        <span class="meta-item">
+                            <span class="meta-icon">📅</span>
+                            Generated: {{ generated_date|date:"M d, Y H:i" }}
+                        </span>
+                        <span class="meta-item">
+                            <span class="meta-icon">🤖</span>
+                            AI-Powered Analysis
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Content -->
+        <div class="summary-content">
+            <div class="summary-card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <span class="title-icon">📊</span>
+                        Profile Summary
+                    </h2>
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+                
+                <div class="summary-text-container">
+                    <div class="typing-text" id="summaryText">{{ summary }}</div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="typing-progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <!-- Additional Info Cards -->
+            {% if additional_info %}
+            <div class="info-grid">
+                {% if repositories_count %}
+                <div class="info-card">
+                    <div class="info-icon">📦</div>
+                    <div class="info-content">
+                        <div class="info-number">{{ repositories_count }}</div>
+                        <div class="info-label">Repositories</div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if followers_count %}
+                <div class="info-card">
+                    <div class="info-icon">👥</div>
+                    <div class="info-content">
+                        <div class="info-number">{{ followers_count }}</div>
+                        <div class="info-label">Followers</div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if primary_language %}
+                <div class="info-card">
+                    <div class="info-icon">💻</div>
+                    <div class="info-content">
+                        <div class="info-number">{{ primary_language }}</div>
+                        <div class="info-label">Top Language</div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if years_active %}
+                <div class="info-card">
+                    <div class="info-icon">⏰</div>
+                    <div class="info-content">
+                        <div class="info-number">{{ years_active }}+</div>
+                        <div class="info-label">Years Active</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="action-section">
+                <a href="https://github.com/{{ github_username }}" target="_blank" class="action-btn primary">
+                    <span class="btn-icon">🔗</span>
+                    View GitHub Profile
+                </a>
+                <button onclick="shareSummary()" class="action-btn secondary">
+                    <span class="btn-icon">📤</span>
+                    Share Analysis
+                </button>
+                <button onclick="downloadSummary()" class="action-btn secondary">
+                    <span class="btn-icon">💾</span>
+                    Download Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="summary-footer">
+            <p class="footer-text">
+                <span class="footer-icon">⚡</span>
+                Powered by ShadowPixel AI Analysis Engine
+            </p>
+            <div class="footer-actions">
+                <button onclick="regenerateAnalysis()" class="footer-btn">
+                    <span class="btn-icon">🔄</span>
+                    Regenerate
+                </button>
+                <a href="{% url 'resume:upload_resume' %}" class="footer-btn">
+                    <span class="btn-icon">📤</span>
+                    Upload New Resume
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for enhanced functionality -->
+    <script>
+        // Enhanced typing animation
+        class TypingAnimation {
+            constructor(element, text, speed = 50) {
+                this.element = element;
+                this.text = text;
+                this.speed = speed;
+                this.index = 0;
+                this.progressBar = document.getElementById('progressBar');
+            }
+
+            start() {
+                this.element.textContent = '';
+                this.element.style.borderRight = '2px solid #00ff88';
+                this.type();
+            }
+
+            type() {
+                if (this.index < this.text.length) {
+                    this.element.textContent += this.text.charAt(this.index);
+                    this.index++;
+                    
+                    // Update progress bar
+                    const progress = (this.index / this.text.length) * 100;
+                    if (this.progressBar) {
+                        this.progressBar.style.width = progress + '%';
+                    }
+                    
+                    setTimeout(() => this.type(), this.speed);
+                } else {
+                    // Animation complete
+                    setTimeout(() => {
+                        this.element.style.borderRight = 'none';
+                        this.showCompletionEffects();
+                    }, 1000);
+                }
+            }
+
+            showCompletionEffects() {
+                // Add completion class for effects
+                this.element.classList.add('typing-complete');
+                
+                // Hide typing indicator
+                const typingIndicator = document.querySelector('.typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.style.display = 'none';
+                }
+                
+                // Show action buttons with animation
+                const actionSection = document.querySelector('.action-section');
+                if (actionSection) {
+                    actionSection.classList.add('show');
+                }
+            }
+        }
+
+        // Initialize typing animation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const summaryElement = document.getElementById('summaryText');
+            const summaryText = summaryElement.textContent;
+            
+            if (summaryText && summaryText.trim()) {
+                const typingAnimation = new TypingAnimation(summaryElement, summaryText, 30);
+                
+                // Start animation after a brief delay
+                setTimeout(() => {
+                    typingAnimation.start();
+                }, 500);
+            }
+
+            // Add particles dynamically
+            createParticles();
+        });
+
+        // Particle creation
+        function createParticles() {
+            const particleField = document.querySelector('.particle-field');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 4 + 1) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                particleField.appendChild(particle);
+            }
+        }
+
+        // Share functionality
+        function shareSummary() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'GitHub Analysis - {{ github_username }}',
+                    text: 'Check out this AI-powered GitHub analysis!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showNotification('Link copied to clipboard!', 'success');
+                });
+            }
+        }
+
+        // Download functionality
+        function downloadSummary() {
+            const summaryText = document.getElementById('summaryText').textContent;
+            const content = `GitHub Analysis for @{{ github_username }}\n\nGenerated: {{ generated_date|date:"M d, Y H:i" }}\n\n${summaryText}\n\nPowered by ShadowPixel AI`;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `github-analysis-{{ github_username }}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Analysis downloaded!', 'success');
+        }
+
+        // Regenerate analysis
+        function regenerateAnalysis() {
+            showNotification('Regenerating analysis...', 'info');
+            // Add your regeneration logic here
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span class="notification-text">${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+            
+            // Hide notification
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        downloadSummary();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        regenerateAnalysis();
+                        break;
+                }
+            }
+        });
+    </script>
 </body>
 </html>

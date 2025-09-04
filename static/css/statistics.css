@@ -1,0 +1,545 @@
+/* Universal box-sizing reset for consistency */
+html {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+/* Color variables */
+:root {
+  --electric-blue: #0099ff;
+  --deep-blue: #0066cc;
+  --ice-blue: #33ccff;
+  --sky-blue: #66d9ff;
+  --midnight-blue: #001133;
+  --void-black: #000000;
+  --carbon-black: #0a0a0a;
+  --steel-black: #1a1a1a;
+  --shadow-black: #111111;
+  --success-green: #00b894;
+  --warning-orange: #fdcb6e;
+  --error-red: #e17055;
+}
+
+/* Body styles */
+body {
+  background: radial-gradient(ellipse at center, var(--midnight-blue) 0%, var(--void-black) 70%);
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Navigation */
+.navigation {
+  position: relative;
+  width: 100%;
+  z-index: 1000;
+  padding-top: 20px;
+}
+
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  gap: 35px;
+  margin-top: 30px;
+  list-style: none;
+  text-align: center;
+  padding: 0;
+}
+
+.nav-menu li {
+  margin: 0;
+}
+
+.nav-menu a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  padding: 10px 18px;
+  border-radius: 25px;
+}
+
+.nav-menu a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--electric-blue), var(--ice-blue));
+  border-radius: 25px;
+  transition: width 0.3s ease;
+  z-index: -1;
+  opacity: 0.2;
+}
+
+.nav-menu a:hover::before {
+  width: 100%;
+}
+
+.nav-menu a:hover {
+  color: white;
+  text-shadow: 0 0 10px var(--ice-blue);
+  transform: translateY(-2px);
+}
+
+.nav-menu a:focus {
+  outline: 2px solid var(--electric-blue);
+  outline-offset: 2px;
+}
+
+/* Hero Container */
+.hero-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 20px 80px;
+  position: relative;
+}
+
+.hero-content {
+  max-width: 1000px;
+  text-align: center;
+  z-index: 2;
+  width: 100%;
+}
+
+/* Main title */
+.main-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 50px;
+  background: linear-gradient(135deg, 
+    #ffffff 0%, 
+    var(--ice-blue) 25%, 
+    var(--electric-blue) 50%, 
+    var(--deep-blue) 75%, 
+    #ffffff 100%
+  );
+  text-align: center;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleReveal 1.5s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+  position: relative;
+}
+
+/* Fallback for browsers that don't support text gradients */
+@supports not (-webkit-background-clip: text) {
+  .main-title {
+    color: #ffffff;
+  }
+}
+
+@keyframes titleReveal {
+  0% { 
+    opacity: 0; 
+    transform: translateY(40px) scale(0.95);
+    filter: blur(5px);
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.main-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--electric-blue), var(--ice-blue));
+  border-radius: 2px;
+  animation: underlineGrow 1s ease-out 1.5s both;
+}
+
+@keyframes underlineGrow {
+  from { width: 0; }
+  to { width: 80px; }
+}
+
+/* Upload Section */
+.upload-section {
+  margin-top: 40px;
+  animation: sectionSlide 1.2s ease-out 0.5s both;
+}
+
+@keyframes sectionSlide {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Form Card */
+.form-card {
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(0, 0, 0, 0.6));
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(0, 153, 255, 0.2);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 153, 255, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.form-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 70px rgba(0, 153, 255, 0.15);
+}
+
+/* Statistics Header */
+.form-card h2 {
+  color: var(--ice-blue);
+  font-size: 2rem;
+  margin-bottom: 30px;
+  font-weight: 700;
+  text-align: center;
+  background: linear-gradient(135deg, var(--ice-blue), var(--electric-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.form-card h2::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--ice-blue), var(--electric-blue));
+  border-radius: 1px;
+}
+
+/* Statistics Grid */
+.form-card > div[style*="display: grid"] {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 25px !important;
+  margin: 40px 0 !important;
+}
+
+/* Individual Stat Cards */
+.form-card > div[style*="display: grid"] > div {
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.15), rgba(0, 0, 0, 0.4)) !important;
+  border: 1px solid rgba(0, 153, 255, 0.3) !important;
+  border-radius: 15px !important;
+  padding: 30px 20px !important;
+  text-align: center !important;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-card > div[style*="display: grid"] > div::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 153, 255, 0.1), transparent);
+  transition: left 0.8s ease;
+}
+
+.form-card > div[style*="display: grid"] > div:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 153, 255, 0.3);
+  border-color: rgba(0, 153, 255, 0.6) !important;
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.2), rgba(0, 0, 0, 0.5)) !important;
+}
+
+.form-card > div[style*="display: grid"] > div:hover::before {
+  left: 100%;
+}
+
+/* Stat Numbers */
+.form-card h3 {
+  color: var(--ice-blue) !important;
+  font-size: 3rem !important;
+  font-weight: 800 !important;
+  margin-bottom: 15px !important;
+  text-shadow: 0 0 20px rgba(51, 204, 255, 0.5);
+  animation: numberPulse 2s ease-in-out infinite;
+}
+
+@keyframes numberPulse {
+  0%, 100% { 
+    transform: scale(1);
+    text-shadow: 0 0 20px rgba(51, 204, 255, 0.5);
+  }
+  50% { 
+    transform: scale(1.05);
+    text-shadow: 0 0 30px rgba(51, 204, 255, 0.8);
+  }
+}
+
+/* Stat Labels */
+.form-card p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Add icons for each stat type */
+.form-card > div[style*="display: grid"] > div:nth-child(1) h3::before {
+  content: '📊 ';
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(2) h3::before {
+  content: '✅ ';
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(3) h3::before {
+  content: '⏳ ';
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(4) h3::before {
+  content: '❌ ';
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Different colors for each stat type */
+.form-card > div[style*="display: grid"] > div:nth-child(1):hover {
+  border-color: rgba(0, 153, 255, 0.6) !important;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(2):hover {
+  border-color: rgba(0, 184, 148, 0.6) !important;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(2) h3 {
+  color: var(--success-green) !important;
+  text-shadow: 0 0 20px rgba(0, 184, 148, 0.5) !important;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(3):hover {
+  border-color: rgba(253, 203, 110, 0.6) !important;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(3) h3 {
+  color: var(--warning-orange) !important;
+  text-shadow: 0 0 20px rgba(253, 203, 110, 0.5) !important;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(4):hover {
+  border-color: rgba(225, 112, 85, 0.6) !important;
+}
+
+.form-card > div[style*="display: grid"] > div:nth-child(4) h3 {
+  color: var(--error-red) !important;
+  text-shadow: 0 0 20px rgba(225, 112, 85, 0.5) !important;
+}
+
+/* Enhanced Animated background particles */
+.particle-field {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  background: var(--electric-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--electric-blue);
+  animation: particleFloat 6s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px) scale(1);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translateY(-50px) translateX(25px) scale(1.2);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translateY(-80px) translateX(-15px) scale(0.8);
+    opacity: 0.4;
+  }
+  75% { 
+    transform: translateY(-30px) translateX(35px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-menu {
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding: 0 15px;
+  }
+  
+  .nav-menu a {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+  
+  .hero-container {
+    padding: 80px 15px 60px;
+    min-height: 90vh;
+  }
+  
+  .hero-content {
+    max-width: 100%;
+  }
+  
+  .form-card {
+    padding: 30px 20px;
+  }
+  
+  .main-title {
+    font-size: 2.5rem;
+    margin-bottom: 40px;
+  }
+  
+  .form-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+  }
+  
+  .form-card > div[style*="display: grid"] {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+    gap: 20px !important;
+    margin: 30px 0 !important;
+  }
+  
+  .form-card > div[style*="display: grid"] > div {
+    padding: 25px 15px !important;
+  }
+  
+  .form-card h3 {
+    font-size: 2.5rem !important;
+  }
+  
+  .form-card p {
+    font-size: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-menu {
+    gap: 15px;
+    margin-top: 15px;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-menu li {
+    margin: 5px 0;
+  }
+  
+  .hero-container {
+    padding: 60px 10px 40px;
+  }
+  
+  .form-card {
+    padding: 25px 15px;
+    margin: 20px 0;
+  }
+  
+  .main-title {
+    font-size: 2rem;
+    margin-bottom: 35px;
+  }
+  
+  .main-title::after {
+    width: 60px;
+  }
+  
+  .form-card h2 {
+    font-size: 1.6rem;
+  }
+  
+  .form-card > div[style*="display: grid"] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 15px !important;
+    margin: 25px 0 !important;
+  }
+  
+  .form-card > div[style*="display: grid"] > div {
+    padding: 20px 10px !important;
+  }
+  
+  .form-card h3 {
+    font-size: 2rem !important;
+  }
+  
+  .form-card p {
+    font-size: 0.9rem !important;
+  }
+  
+  .upload-section {
+    margin-top: 30px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .nav-menu a {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .form-card {
+    border: 2px solid rgba(0, 153, 255, 0.5);
+  }
+  
+  .form-card > div[style*="display: grid"] > div {
+    border: 2px solid rgba(0, 153, 255, 0.5) !important;
+  }
+}

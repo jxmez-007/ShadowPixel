@@ -13,7 +13,7 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.conf import settings as django_settings  # Renamed to avoid conflict
+from django.conf import settings as django_settings
 from django.utils import timezone
 from typing import Optional, Any, Union, List, Dict, Tuple
 import os
@@ -32,43 +32,58 @@ except ImportError:
     Resume = None
     ResumeProcessingLog = None
 
+# Import AI summary functions
 try:
-    from .services import TextExtractionService as BackendTextExtractionService
-    from .services import ResumeAnalysisService as BackendResumeAnalysisService
-    from .services import GitHubService as BackendGitHubService
-
-    TextExtractionService = BackendTextExtractionService
-    ResumeAnalysisService = BackendResumeAnalysisService
-    GitHubService = BackendGitHubService
-    
-    SERVICES_AVAILABLE = True
+    from .utils import generate_ai_summary, generate_simple_summary
+    AI_SUMMARY_AVAILABLE = True
 except ImportError:
-    SERVICES_AVAILABLE = False
+    AI_SUMMARY_AVAILABLE = False
+    def generate_ai_summary(resume_text: str) -> str:
+        return "AI summary not available"
+    def generate_simple_summary(resume_text: str) -> str:
+        return "Summary generation not available"
 
-    # Fallback placeholder classes
-    class TextExtractionService:
-        @staticmethod
-        def extract_text(file_path: str, file_extension: str) -> tuple[str, bool]:
-            return "Service not available", False
+# FIXED: Always create service classes to avoid None attribute errors
+class _FallbackTextExtraction:
+    @staticmethod
+    def extract_text(file_path: str, file_extension: str) -> Tuple[str, bool]:
+        return "Service not available", False
+
+class _FallbackResumeAnalysis:
+    @staticmethod
+    def generate_summary(text: str) -> str:
+        return "Service not available"
+    @staticmethod
+    def extract_contact_info(text: str) -> Dict[str, Any]:
+        return {}
+    @staticmethod
+    def extract_skills(text: str) -> List[str]:
+        return []
+
+class _FallbackGitHub:
+    @staticmethod
+    def get_user_profile(username: str) -> Tuple[Dict[str, Any], bool]:
+        return {"error": "Service not available"}, False
+    @staticmethod
+    def get_user_repositories(username: str) -> Tuple[List[Any], bool]:
+        return [], False
+
+# FIXED: Always assign service classes - never None
+try:
+    from .services import TextExtractionService as _RealTextExtraction
+    from .services import ResumeAnalysisService as _RealResumeAnalysis
+    from .services import GitHubService as _RealGitHub
     
-    class ResumeAnalysisService:
-        @staticmethod
-        def generate_summary(text: str) -> str:
-            return "Service not available"
-        @staticmethod
-        def extract_contact_info(text: str) -> dict:
-            return {}
-        @staticmethod
-        def extract_skills(text: str) -> list:
-            return []
+    TextExtractionService = _RealTextExtraction
+    ResumeAnalysisService = _RealResumeAnalysis
+    GitHubService = _RealGitHub
+    SERVICES_AVAILABLE = True
     
-    class GitHubService:
-        @staticmethod
-        def get_user_profile(username: str) -> tuple[dict, bool]:
-            return {"error": "Service not available"}, False
-        @staticmethod
-        def get_user_repositories(username: str) -> tuple[list, bool]:
-            return [], False
+except ImportError:
+    TextExtractionService = _FallbackTextExtraction
+    ResumeAnalysisService = _FallbackResumeAnalysis
+    GitHubService = _FallbackGitHub
+    SERVICES_AVAILABLE = False
 
 def validate_github_username(username: str) -> bool:
     """Validate GitHub username format according to GitHub rules."""
@@ -93,7 +108,7 @@ def validate_file_security(filename: str) -> bool:
     return not any(pattern in filename for pattern in dangerous_patterns)
 
 def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
-    """Process a resume using your existing services and models"""
+    """Process a resume using your existing services and models with AI SUMMARY"""
     if Resume is None:
         return False, "Resume model not available"
     
@@ -112,7 +127,7 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
         
         processing_success = True
         
-        # Step 1: Text extraction
+        # Step 1: Text extraction - FIXED: Services are never None now
         if resume.resume_file:
             start_time = time.time()
             
@@ -120,6 +135,7 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
                 file_path = resume.resume_file.path
                 file_extension = getattr(resume, 'file_extension', '')
                 
+                # FIXED: No None check needed - always has extract_text method
                 extracted_text, extraction_success = TextExtractionService.extract_text(
                     file_path, file_extension
                 )
@@ -139,21 +155,34 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
                     )
                 
                 if extraction_success and extracted_text.strip():
-                    # Step 2: Resume analysis using your ResumeAnalysisService
+                    # Step 2: Enhanced Resume analysis with AI SUMMARY
                     start_time = time.time()
                     
-                    # Generate summary
-                    summary = ResumeAnalysisService.generate_summary(extracted_text)
-                    resume.text_summary = summary
+                    # Generate AI summary using our utils.py function
+                    if AI_SUMMARY_AVAILABLE:
+                        try:
+                            ai_summary = generate_ai_summary(extracted_text)
+                            resume.text_summary = ai_summary
+                            print(f"✅ AI Summary Generated: {ai_summary[:100]}...")
+                        except Exception as e:
+                            print(f"❌ AI Summary failed, using fallback: {e}")
+                            resume.text_summary = generate_simple_summary(extracted_text)
+                    else:
+                        # Use existing ResumeAnalysisService or simple fallback
+                        try:
+                            # FIXED: No None check needed
+                            resume.text_summary = ResumeAnalysisService.generate_summary(extracted_text)
+                        except Exception:
+                            resume.text_summary = generate_simple_summary(extracted_text)
                     
-                    # Extract contact information  
+                    # Extract contact information - FIXED: No None check needed
                     contact_info = ResumeAnalysisService.extract_contact_info(extracted_text)
                     if contact_info.get('email'):
                         resume.email = contact_info['email']
                     if contact_info.get('phone'):
                         resume.phone = contact_info['phone']
                     
-                    # Extract skills
+                    # Extract skills - FIXED: No None check needed
                     skills = ResumeAnalysisService.extract_skills(extracted_text)
                     if skills:
                         resume.skills_json = skills
@@ -165,7 +194,7 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
                             resume=resume,
                             step="resume_analysis",
                             status="completed",
-                            message=f"Extracted {len(skills)} skills and contact info",
+                            message=f"Generated AI summary and extracted {len(skills)} skills",
                             execution_time_ms=execution_time
                         )
                 
@@ -179,19 +208,15 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
                         message=f"Text extraction error: {str(e)}"
                     )
         
-        # Step 3: GitHub integration
+        # Step 3: GitHub integration - FIXED: No None check needed
         if resume.github_username:
             start_time = time.time()
             
             try:
-                # Get GitHub profile using your GitHubService
                 profile_data, profile_success = GitHubService.get_user_profile(resume.github_username)
-                
-                # Get repositories
                 repos_data, repos_success = GitHubService.get_user_repositories(resume.github_username)
                 
                 if profile_success:
-                    # Store GitHub data in your existing github_data JSONField
                     github_data = {
                         'profile': profile_data,
                         'repositories': repos_data if repos_success else []
@@ -200,7 +225,6 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
                     resume.github_sync_success = True
                     resume.github_last_sync = timezone.now()
                     
-                    # Update full_name if available from GitHub
                     if profile_data.get('name') and not getattr(resume, 'full_name', ''):
                         resume.full_name = profile_data['name']
                     
@@ -254,7 +278,7 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
                 )
         
         resume.save()
-        return True, "Processing completed"
+        return True, "Processing completed with AI summary"
         
     except Exception as e:
         if Resume is not None:
@@ -273,7 +297,7 @@ def process_uploaded_resume(resume_id: int) -> Tuple[bool, str]:
         return False, f"Processing failed: {str(e)}"
 
 def process_resume_async(resume_id: int) -> None:
-    """Process a resume in background: extract text and sync GitHub data."""
+    """Process a resume in background: extract text and sync GitHub data with AI SUMMARY."""
     if not SERVICES_AVAILABLE or Resume is None or ResumeProcessingLog is None:
         return
     
@@ -281,7 +305,6 @@ def process_resume_async(resume_id: int) -> None:
         resume = Resume.objects.get(id=resume_id)
         resume.mark_processing("Starting background processing")
         
-        # Log processing start
         ResumeProcessingLog.objects.create(
             resume=resume,
             step='processing_start',
@@ -291,7 +314,7 @@ def process_resume_async(resume_id: int) -> None:
         
         start_time = time.time()
         
-        # Extract text from file
+        # Extract text from file - FIXED: No None check needed
         if resume.resume_file:
             file_path = resume.resume_file.path
             file_extension = getattr(resume, 'file_extension', '')
@@ -303,21 +326,30 @@ def process_resume_async(resume_id: int) -> None:
             extraction_time = int((time.time() - extraction_start) * 1000)
             
             if extraction_success:
-                # Save extracted text
                 resume.extracted_text = extracted_text
                 resume.text_extraction_success = True
                 
-                # Generate summary
-                resume.text_summary = ResumeAnalysisService.generate_summary(extracted_text)
+                # Generate AI summary
+                if AI_SUMMARY_AVAILABLE and extracted_text.strip():
+                    try:
+                        ai_summary = generate_ai_summary(extracted_text)
+                        resume.text_summary = ai_summary
+                        print(f"✅ Background AI Summary: {ai_summary[:50]}...")
+                    except Exception as e:
+                        print(f"❌ Background AI failed: {e}")
+                        resume.text_summary = generate_simple_summary(extracted_text)
+                else:
+                    # Fallback to existing service - FIXED: No None check needed
+                    resume.text_summary = ResumeAnalysisService.generate_summary(extracted_text)
                 
-                # Extract contact information
+                # Extract contact information - FIXED: No None check needed
                 contact_info = ResumeAnalysisService.extract_contact_info(extracted_text)
                 if contact_info.get('email') and not getattr(resume, 'email', ''):
                     resume.email = contact_info['email']
                 if contact_info.get('phone') and not getattr(resume, 'phone', ''):
                     resume.phone = contact_info['phone']
                 
-                # Extract skills
+                # Extract skills - FIXED: No None check needed
                 skills_list = ResumeAnalysisService.extract_skills(extracted_text)
                 resume.skills_json = skills_list
                 resume.skills = ', '.join(skills_list)
@@ -328,7 +360,7 @@ def process_resume_async(resume_id: int) -> None:
                     resume=resume,
                     step='text_extraction',
                     status='completed',
-                    message=f'Successfully extracted {len(extracted_text)} characters',
+                    message=f'Successfully extracted {len(extracted_text)} characters and generated AI summary',
                     execution_time_ms=extraction_time
                 )
             else:
@@ -343,7 +375,7 @@ def process_resume_async(resume_id: int) -> None:
                     execution_time_ms=extraction_time
                 )
         
-        # Sync GitHub data
+        # GitHub sync - FIXED: No None check needed
         github_start = time.time()
         github_profile, profile_success = GitHubService.get_user_profile(resume.github_username)
         github_repos, repos_success = GitHubService.get_user_repositories(resume.github_username)
@@ -385,7 +417,7 @@ def process_resume_async(resume_id: int) -> None:
             resume=resume,
             step='processing_complete',
             status='completed',
-            message='All processing steps completed',
+            message='All processing steps completed with AI summary',
             execution_time_ms=total_time
         )
         
@@ -405,16 +437,16 @@ def process_resume_async(resume_id: int) -> None:
             except Exception:
                 pass
 
-# Main views (enhanced versions)
+# Main views
 def index(request):
     """Home page with dashboard overview."""
     try:
-        context = {
+        context: Dict[str, Any] = {
             'stats': {},
-            'recent_resumes': []
+            'recent_resumes': [],
+            'ai_summary_available': AI_SUMMARY_AVAILABLE
         }
         
-        # Add comprehensive stats if Resume model exists
         if Resume is not None:
             context['stats'] = {
                 'total_resumes': Resume.objects.count(),
@@ -428,17 +460,16 @@ def index(request):
         
         return render(request, 'resume/index.html', context)
     except Exception as e:
-        # Fallback for when models don't exist
-        context = {'stats': {}, 'recent_resumes': []}
+        context: Dict[str, Any] = {'stats': {}, 'recent_resumes': [], 'ai_summary_available': AI_SUMMARY_AVAILABLE}
         return render(request, 'resume/index.html', context)
 
 @require_http_methods(["GET", "POST"])
 def upload_resume(request):
-    """Handle resume upload with enhanced processing - FIXED VERSION."""
+    """Handle resume upload with enhanced processing."""
     if request.method == 'GET':
-        # Show the upload form
         context = {
             'services_available': SERVICES_AVAILABLE,
+            'ai_summary_available': AI_SUMMARY_AVAILABLE,
             'supported_formats': ['.pdf', '.docx', '.txt']
         }
         return render(request, 'resume/upload.html', context)
@@ -454,62 +485,54 @@ def upload_resume(request):
                 messages.error(request, 'GitHub username and resume file are required.')
                 return render(request, 'resume/upload.html')
             
-            # Validate GitHub username
             if not validate_github_username(github_username):
                 messages.error(request, 'Invalid GitHub username format.')
                 return render(request, 'resume/upload.html')
             
-            # Check for duplicate username
             if Resume is not None and Resume.objects.filter(github_username=github_username).exists():
                 messages.error(request, f'Resume for GitHub username "{github_username}" already exists.')
                 return render(request, 'resume/upload.html')
             
-            # Validate file
             if not validate_file_security(resume_file.name):
                 messages.error(request, 'Invalid filename contains dangerous characters.')
                 return render(request, 'resume/upload.html')
             
-            # Check file size (5MB limit)
             if resume_file.size > 5 * 1024 * 1024:
                 messages.error(request, 'File too large. Maximum size is 5MB.')
                 return render(request, 'resume/upload.html')
             
-            # Check file extension
             allowed_extensions = {'.pdf', '.docx', '.txt'}
             file_extension = Path(resume_file.name).suffix.lower()
             if file_extension not in allowed_extensions:
                 messages.error(request, f'File type not allowed. Supported types: {", ".join(allowed_extensions)}')
                 return render(request, 'resume/upload.html')
             
-            # Create Resume record if model exists - FIXED: removed file_extension assignment
+            # Create Resume record
             if Resume is not None:
                 resume_obj = Resume.objects.create(
                     github_username=github_username,
-                    resume_file=resume_file,  # Django handles the file saving
+                    resume_file=resume_file,
                     original_filename=resume_file.name,
                     file_size=resume_file.size,
-                    # ✅ FIXED: Removed file_extension assignment - it's a read-only property
                     status='pending'
                 )
                 
-                # Enhanced processing with immediate execution
+                # Enhanced processing with AI summary
                 if SERVICES_AVAILABLE:
                     try:
-                        # Try immediate processing first
                         success, message = process_uploaded_resume(resume_obj.pk)
                         if success:
-                            success_message = 'Resume uploaded and processed successfully! Check the details page to see AI analysis results.'
+                            success_message = '🎉 Resume uploaded and processed successfully! ✨ AI-powered summary generated. Check the details page to see your AI analysis!'
                         else:
-                            # Fall back to background processing if immediate fails
                             processing_thread = threading.Thread(
                                 target=process_resume_async,
                                 args=(resume_obj.pk,),
                                 daemon=True
                             )
                             processing_thread.start()
-                            success_message = f'Resume uploaded! Processing started in background. Error: {message}'
+                            success_message = f'Resume uploaded! 🚀 AI processing started in background. {message}'
                     except Exception as e:
-                        success_message = f'Resume uploaded but processing failed: {str(e)}'
+                        success_message = f'Resume uploaded but AI processing failed: {str(e)}'
                 else:
                     success_message = f'Resume uploaded successfully! File: {resume_file.name}'
                 
@@ -523,12 +546,10 @@ def upload_resume(request):
             messages.error(request, f'Upload failed: {str(e)}')
             return render(request, 'resume/upload.html')
 
-# Keep all the rest of your views exactly as they are...
-# [Rest of your views remain unchanged]
-
+# ADDED: All missing view functions to fix the server error
 def uploaded_resumes(request):
     """Display list of uploaded resumes with filtering."""
-    context = {'resumes': [], 'filter_status': 'all'}
+    context: Dict[str, Any] = {'resumes': [], 'filter_status': 'all'}
     
     if Resume is not None:
         resumes = Resume.objects.all().order_by('-created_at')
@@ -551,7 +572,7 @@ def uploaded_resumes(request):
             context['search_query'] = search_query
         
         # Add pagination
-        paginator = Paginator(resumes, 10)  # Show 10 resumes per page
+        paginator = Paginator(resumes, 10)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
@@ -577,18 +598,23 @@ def resume_detail(request, pk):
     try:
         resume = get_object_or_404(Resume, pk=pk)
         
-        # FIXED: Get processing logs if available using getattr to avoid attribute errors
+        # Get processing logs if available
         processing_logs = []
         if ResumeProcessingLog is not None:
-            # Use getattr to safely access the processing_logs relationship
             processing_logs_manager = getattr(resume, 'processing_logs', None)
             if processing_logs_manager is not None:
                 processing_logs = processing_logs_manager.all()[:10]
+
+        skill_list = []
+        if resume.skills:
+            skill_list = [skill.strip() for skill in resume.skills.split(',')]
         
         context = {
             'resume': resume,
+            'skills': skill_list,
             'processing_logs': processing_logs,
             'services_available': SERVICES_AVAILABLE,
+            'ai_summary_available': AI_SUMMARY_AVAILABLE,
             'github_profile': getattr(resume, 'github_profile', None),
             'github_repositories': getattr(resume, 'github_repositories', [])[:5],
         }
@@ -597,11 +623,13 @@ def resume_detail(request, pk):
     except Exception:
         return render(request, 'resume/resume_detail.html', {'resume': None, 'pk': pk})
 
-# [Continue with all your other views exactly as they are...]
+def dashboard(request):
+    """Dashboard view - redirect to index."""
+    return redirect('resume:index')
 
 def statistics(request):
     """Display comprehensive system statistics."""
-    context = {'stats': {}}
+    context: Dict[str, Any] = {'stats': {}}
     
     if Resume is not None:
         total_resumes = Resume.objects.count()
@@ -617,7 +645,6 @@ def statistics(request):
             'total_file_size': sum(getattr(r, 'file_size', 0) for r in Resume.objects.all()) / (1024 * 1024),
         }
         
-        # Calculate success rates
         if total_resumes > 0:
             context['stats']['completion_rate'] = round(
                 (context['stats']['completed_processing'] / total_resumes) * 100, 1
@@ -629,8 +656,7 @@ def statistics(request):
                 (context['stats']['github_sync_success'] / total_resumes) * 100, 1
             )
         
-        # FIXED: Recent activity - convert QuerySet to list to avoid type error
-        recent_resumes = list(Resume.objects.order_by('-updated_at')[:10])
+        recent_resumes: List[Any] = list(Resume.objects.order_by('-updated_at')[:10])
         context['recent_activity'] = recent_resumes
     
     return render(request, 'resume/statistics.html', context)
@@ -658,7 +684,6 @@ def resume_processing_logs(request, pk):
     
     resume = get_object_or_404(Resume, pk=pk)
     
-    # FIXED: Use getattr to safely access processing_logs relationship
     logs = []
     processing_logs_manager = getattr(resume, 'processing_logs', None)
     if processing_logs_manager is not None:
@@ -680,7 +705,6 @@ def resume_github_sync(request, pk):
     resume = get_object_or_404(Resume, pk=pk)
     
     try:
-        # Trigger GitHub sync
         github_profile, profile_success = GitHubService.get_user_profile(resume.github_username)
         github_repos, repos_success = GitHubService.get_user_repositories(resume.github_username)
         
@@ -710,20 +734,18 @@ def reprocess_resume(request, pk):
     
     resume = get_object_or_404(Resume, pk=pk)
     
-    # Try immediate processing first
     try:
         success, message = process_uploaded_resume(resume.pk)
         if success:
-            messages.success(request, 'Resume reprocessed successfully!')
+            messages.success(request, '🎉 Resume reprocessed successfully! AI summary regenerated.')
         else:
-            # Fall back to background processing
             processing_thread = threading.Thread(
                 target=process_resume_async,
                 args=(resume.pk,),
                 daemon=True
             )
             processing_thread.start()
-            messages.success(request, f'Resume reprocessing started. Error: {message}')
+            messages.success(request, f'Resume reprocessing started in background. {message}')
     except Exception as e:
         messages.error(request, f'Reprocessing failed: {str(e)}')
     
@@ -733,15 +755,10 @@ def help_page(request):
     """Display help and documentation."""
     context = {
         'services_available': SERVICES_AVAILABLE,
+        'ai_summary_available': AI_SUMMARY_AVAILABLE,
         'supported_formats': ['.pdf', '.docx', '.txt']
     }
     return render(request, 'resume/help.html', context)
-
-# [Keep all other views unchanged]
-
-def dashboard(request):
-    """Dashboard view."""
-    return redirect('resume:index')
 
 def edit_resume(request, pk):
     """Edit resume details."""
@@ -786,7 +803,7 @@ def download_resume(request, pk):
 def search_resumes(request):
     """Enhanced search resumes."""
     query = request.GET.get('q', '')
-    context = {'query': query, 'results': []}
+    context: Dict[str, Any] = {'query': query, 'results': []}
     
     if Resume is not None and query:
         results = Resume.objects.filter(
@@ -805,9 +822,8 @@ def search_resumes(request):
 
 def github_profile(request, username):
     """Display GitHub profile integration."""
-    context = {'username': username}
+    context: Dict[str, Any] = {'username': username}
     
-    # Try to find resume with this GitHub username
     if Resume is not None:
         try:
             resume = Resume.objects.get(github_username=username)
@@ -820,7 +836,7 @@ def github_profile(request, username):
 
 def summary_page(request):
     """Display summary page."""
-    context = {}
+    context: Dict[str, Any] = {}
     
     if Resume is not None:
         context['total_resumes'] = Resume.objects.count()
@@ -834,12 +850,11 @@ def about(request):
     """About page."""
     return render(request, 'resume/about.html')
 
-# FIXED: Added the missing settings function that matches your URL pattern
 def settings(request):
     """Settings page."""
     return render(request, 'resume/settings.html')
 
-# API endpoints (enhanced)
+# API endpoints
 def api_resumes_list(request):
     """API endpoint for resumes list."""
     if Resume is None:
@@ -847,12 +862,10 @@ def api_resumes_list(request):
     
     resumes = Resume.objects.all()
     
-    # Apply filters
     status = request.GET.get('status')
     if status:
         resumes = resumes.filter(status=status)
     
-    # Serialize data
     resume_data = []
     for resume in resumes:
         resume_data.append({
@@ -877,6 +890,7 @@ def health_check(request):
         'timestamp': datetime.now().isoformat(),
         'database': Resume is not None,
         'services_available': SERVICES_AVAILABLE,
+        'ai_summary_available': AI_SUMMARY_AVAILABLE,
         'total_resumes': Resume.objects.count() if Resume is not None else 0,
         'processing_queue': Resume.objects.filter(status='processing').count() if Resume is not None else 0,
     })
@@ -900,7 +914,7 @@ def error_500(request):
     }
     return render(request, 'resume/error.html', context, status=500)
 
-# Keep all remaining placeholder views as they are
+# Placeholder views for all URL mappings
 def processing_queue(request):
     return HttpResponse("Processing queue - Not implemented yet")
 
