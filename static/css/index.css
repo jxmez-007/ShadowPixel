@@ -684,7 +684,18 @@ body {
   }
 }
 
+/* MOBILE OPTIMIZATIONS - NEW ADDITIONS */
 @media (max-width: 480px) {
+  /* Hide performance-heavy elements on mobile */
+  .particle-field {
+    display: none; /* Removes animated particles for better performance */
+  }
+  
+  .geo-shape {
+    display: none; /* Removes rotating shapes for better performance */
+  }
+  
+  /* Enhanced touch targets for mobile */
   .nav-menu {
     gap: 15px;
     margin-top: 15px;
@@ -694,6 +705,22 @@ body {
   
   .nav-menu li {
     margin: 3px 0;
+  }
+  
+  .nav-menu a {
+    min-height: 44px; /* Apple's recommended minimum touch size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+  
+  /* Remove hover effects on mobile to prevent sticky states */
+  .nav-menu a:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .form-card:hover {
+    transform: none;
   }
   
   .hero-container {
@@ -718,6 +745,28 @@ body {
   .hero-subtitle {
     font-size: 1.1rem;
     margin-bottom: 30px;
+  }
+  
+  /* Mobile-friendly buttons */
+  .btn-primary, .btn-secondary {
+    min-height: 44px; /* Ensures easy tapping */
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 18px 24px;
+  }
+  
+  /* Mobile form optimizations */
+  input, textarea, select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 8px;
+    min-height: 44px;
+  }
+  
+  button {
+    font-size: 16px;
+    min-height: 44px;
+    border-radius: 8px;
   }
   
   .form-card {
@@ -762,6 +811,31 @@ body {
     display: block;
     margin-top: 5px;
     margin-left: 0 !important;
+  }
+  
+  /* Reduce animations on mobile for better performance */
+  * {
+    animation-duration: 0.5s !important;
+  }
+}
+
+/* Additional mobile performance optimizations */
+@media (max-width: 768px) {
+  /* Disable expensive effects on mobile */
+  .form-card::before,
+  .status-badge::before,
+  .btn-primary::before {
+    display: none;
+  }
+  
+  /* Simplify background for better performance */
+  body {
+    background: var(--midnight-blue);
+  }
+  
+  /* Reduce backdrop-filter blur for performance */
+  .form-card {
+    backdrop-filter: blur(10px);
   }
 }
 

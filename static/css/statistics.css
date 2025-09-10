@@ -405,8 +405,31 @@ body {
   }
 }
 
-/* Responsive Design */
+/* ENHANCED MOBILE MEDIA QUERIES */
+
+/* Large tablets and small laptops */
+@media (max-width: 1024px) {
+  .hero-container {
+    padding: 100px 20px 70px;
+  }
+  
+  .form-card {
+    padding: 35px 25px;
+  }
+  
+  .form-card > div[style*="display: grid"] {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 20px !important;
+  }
+}
+
+/* Standard tablets */
 @media (max-width: 768px) {
+  /* Hide particles on tablets for better performance */
+  .particle-field {
+    display: none;
+  }
+  
   .nav-menu {
     gap: 20px;
     flex-wrap: wrap;
@@ -430,6 +453,7 @@ body {
   
   .form-card {
     padding: 30px 20px;
+    backdrop-filter: blur(15px); /* Reduce blur for performance */
   }
   
   .main-title {
@@ -461,6 +485,57 @@ body {
   }
 }
 
+/* Small tablets in portrait mode */
+@media (max-width: 600px) {
+  .nav-menu {
+    gap: 15px;
+    margin-top: 15px;
+  }
+  
+  .nav-menu a {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .hero-container {
+    padding: 70px 12px 50px;
+  }
+  
+  .main-title {
+    font-size: 2.2rem;
+    margin-bottom: 35px;
+  }
+  
+  .form-card {
+    padding: 25px 18px;
+    margin: 15px 0;
+  }
+  
+  .form-card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+  
+  .form-card > div[style*="display: grid"] {
+    grid-template-columns: 1fr 1fr !important; /* 2x2 grid for small screens */
+    gap: 18px !important;
+    margin: 25px 0 !important;
+  }
+  
+  .form-card > div[style*="display: grid"] > div {
+    padding: 22px 12px !important;
+  }
+  
+  .form-card h3 {
+    font-size: 2.2rem !important;
+  }
+  
+  .form-card p {
+    font-size: 0.95rem !important;
+  }
+}
+
+/* Mobile phones */
 @media (max-width: 480px) {
   .nav-menu {
     gap: 15px;
@@ -473,6 +548,21 @@ body {
     margin: 5px 0;
   }
   
+  .nav-menu a {
+    min-height: 44px; /* Touch-friendly size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+  }
+  
+  /* Remove hover effects on mobile */
+  .nav-menu a:hover,
+  .form-card:hover,
+  .form-card > div[style*="display: grid"] > div:hover {
+    transform: none !important;
+  }
+  
   .hero-container {
     padding: 60px 10px 40px;
   }
@@ -480,6 +570,7 @@ body {
   .form-card {
     padding: 25px 15px;
     margin: 20px 0;
+    border-radius: 15px;
   }
   
   .main-title {
@@ -503,6 +594,7 @@ body {
   
   .form-card > div[style*="display: grid"] > div {
     padding: 20px 10px !important;
+    border-radius: 12px !important;
   }
   
   .form-card h3 {
@@ -515,6 +607,63 @@ body {
   
   .upload-section {
     margin-top: 30px;
+  }
+  
+  /* Simplify icons on mobile */
+  .form-card > div[style*="display: grid"] > div:nth-child(1) h3::before,
+  .form-card > div[style*="display: grid"] > div:nth-child(2) h3::before,
+  .form-card > div[style*="display: grid"] > div:nth-child(3) h3::before,
+  .form-card > div[style*="display: grid"] > div:nth-child(4) h3::before {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 375px) {
+  .hero-container {
+    padding: 50px 8px 35px;
+  }
+  
+  .form-card {
+    padding: 20px 12px;
+    margin: 15px 0;
+  }
+  
+  .main-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+  
+  .form-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+  }
+  
+  .form-card > div[style*="display: grid"] {
+    gap: 12px !important;
+    margin: 20px 0 !important;
+  }
+  
+  .form-card > div[style*="display: grid"] > div {
+    padding: 18px 8px !important;
+  }
+  
+  .form-card h3 {
+    font-size: 1.8rem !important;
+  }
+  
+  .form-card p {
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Extra wide screens */
+@media (min-width: 1400px) {
+  .form-card > div[style*="display: grid"] {
+    grid-template-columns: repeat(4, 1fr) !important;
+    max-width: 1200px;
+    margin: 40px auto !important;
   }
 }
 
@@ -541,5 +690,31 @@ body {
   
   .form-card > div[style*="display: grid"] > div {
     border: 2px solid rgba(0, 153, 255, 0.5) !important;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero-container {
+    padding: 40px 15px 30px;
+    min-height: 90vh;
+  }
+  
+  .form-card > div[style*="display: grid"] {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .form-card > div[style*="display: grid"] > div {
+    padding: 25px 15px !important;
+  }
+  
+  .nav-menu a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

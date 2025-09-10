@@ -400,8 +400,32 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
+/* ENHANCED MOBILE MEDIA QUERIES */
+
+/* Large tablets and small laptops */
+@media (max-width: 1024px) {
+  .hero-container {
+    padding: 100px 20px 70px;
+  }
+  
+  .form-card {
+    padding: 35px 25px;
+    max-width: 700px;
+  }
+  
+  .main-title {
+    font-size: 3.5rem;
+  }
+}
+
+/* Standard tablets */
 @media (max-width: 768px) {
+  /* Hide performance-heavy elements */
+  .particle-field,
+  .geometric-bg {
+    display: none;
+  }
+  
   .nav-menu {
     gap: 20px;
     flex-wrap: wrap;
@@ -426,6 +450,7 @@ body {
   .form-card {
     padding: 30px 20px;
     margin: 0 10px;
+    backdrop-filter: blur(15px); /* Reduce blur for performance */
   }
   
   .main-title {
@@ -455,6 +480,65 @@ body {
   }
 }
 
+/* Small tablets in portrait */
+@media (max-width: 600px) {
+  .nav-menu {
+    gap: 15px;
+    margin-top: 15px;
+  }
+  
+  .nav-menu a {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .hero-container {
+    padding: 70px 12px 50px;
+  }
+  
+  .main-title {
+    font-size: 2.2rem;
+    margin-bottom: 35px;
+  }
+  
+  .main-title::after {
+    width: 80px;
+  }
+  
+  .form-card {
+    padding: 25px 18px;
+    margin: 15px 5px;
+  }
+  
+  .form-card > h2 {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+  }
+  
+  .form-card h3 {
+    font-size: 1.2rem;
+    margin: 20px 0 10px 0;
+    padding-left: 15px;
+  }
+  
+  .form-card h3::before {
+    width: 3px;
+    height: 16px;
+  }
+  
+  .form-card ul {
+    margin-left: 10px;
+  }
+  
+  .form-card li {
+    font-size: 0.9rem;
+    padding-left: 20px;
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+}
+
+/* Mobile phones */
 @media (max-width: 480px) {
   .nav-menu {
     gap: 15px;
@@ -467,6 +551,25 @@ body {
     margin: 5px 0;
   }
   
+  .nav-menu a {
+    min-height: 44px; /* Touch-friendly size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    width: 120px; /* Consistent width */
+  }
+  
+  /* Remove hover effects on mobile */
+  .nav-menu a:hover,
+  .form-card:hover,
+  .form-card li:hover,
+  .form-card h3:hover {
+    transform: none !important;
+    text-shadow: none;
+    padding-left: inherit;
+  }
+  
   .hero-container {
     padding: 60px 10px 40px;
   }
@@ -474,6 +577,7 @@ body {
   .form-card {
     padding: 25px 15px;
     margin: 0 5px;
+    border-radius: 15px;
   }
   
   .main-title {
@@ -482,7 +586,7 @@ body {
   }
   
   .main-title::after {
-    width: 80px;
+    width: 60px;
   }
   
   .form-card > h2 {
@@ -515,6 +619,99 @@ body {
   .upload-section {
     margin-top: 30px;
   }
+  
+  /* Simplify icons on mobile */
+  .form-card h3:nth-of-type(1)::after,
+  .form-card h3:nth-of-type(2)::after,
+  .form-card h3:nth-of-type(3)::after,
+  .form-card h3:nth-of-type(4)::after {
+    font-size: 1.2rem;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 375px) {
+  .hero-container {
+    padding: 50px 8px 35px;
+  }
+  
+  .form-card {
+    padding: 20px 12px;
+    margin: 15px 3px;
+  }
+  
+  .main-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+  
+  .form-card > h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  
+  .form-card h3 {
+    font-size: 1.1rem;
+    margin: 18px 0 8px 0;
+    padding-left: 12px;
+  }
+  
+  .form-card ul {
+    margin-left: 8px;
+  }
+  
+  .form-card li {
+    font-size: 0.85rem;
+    padding-left: 18px;
+    margin-bottom: 6px;
+  }
+  
+  .nav-menu a {
+    width: 100px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero-container {
+    padding: 40px 15px 30px;
+    min-height: 80vh;
+  }
+  
+  .nav-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .main-title {
+    font-size: 2rem;
+    margin-bottom: 25px;
+  }
+  
+  .form-card {
+    padding: 20px 25px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .nav-menu a,
+  .form-card li {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Remove all hover effects on touch devices */
+  .nav-menu a:hover,
+  .form-card:hover,
+  .form-card li:hover,
+  .form-card h3:hover {
+    transform: none;
+    color: inherit;
+    text-shadow: none;
+  }
 }
 
 /* Accessibility improvements */
@@ -544,5 +741,25 @@ body {
   
   .form-card li::before {
     text-shadow: 0 0 5px var(--electric-blue);
+  }
+}
+
+/* High contrast mode - Mobile optimized */
+@media (prefers-contrast: high) and (max-width: 480px) {
+  .nav-menu a {
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    margin: 2px 0;
+  }
+  
+  .form-card {
+    border: 2px solid rgba(0, 153, 255, 0.7);
+  }
+  
+  .form-card h2, .form-card h3 {
+    text-shadow: 0 0 8px rgba(0, 153, 255, 1);
+  }
+  
+  .form-card li::before {
+    text-shadow: 0 0 8px var(--electric-blue);
   }
 }
