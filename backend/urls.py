@@ -20,6 +20,8 @@ urlpatterns = [
     
     # Resume upload
     path('upload/', views.upload_resume, name='upload_resume'),
+    path('resumes/<int:pk>/', views.resume_detail, name='resume_detail'),
+    path('resumes/<int:pk>/text/', views.resume_text, name='resume_text'),
     
     # Resume management
     path('resumes/', views.uploaded_resumes, name='uploaded_resumes'),

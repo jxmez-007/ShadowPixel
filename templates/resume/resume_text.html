@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if resume.name %}{{ resume.name }} - Text View{% else %}Resume Text{% endif %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/resume_text.css' %}">
+</head>
+<body>
+    <!-- Animated Background Particles -->
+    <div class="particle-field">
+        <div class="particle" style="width: 4px; height: 4px; top: 20%; left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="width: 3px; height: 3px; top: 60%; left: 80%; animation-delay: 1s;"></div>
+        <div class="particle" style="width: 5px; height: 5px; top: 40%; left: 30%; animation-delay: 2s;"></div>
+        <div class="particle" style="width: 2px; height: 2px; top: 80%; left: 60%; animation-delay: 3s;"></div>
+        <div class="particle" style="width: 4px; height: 4px; top: 10%; left: 70%; animation-delay: 4s;"></div>
+    </div>
+
+    <div class="container">
+        <a href="{% url 'resume:resume_detail' resume.pk %}" class="back-button">
+            ← Back to Resume Details
+        </a>
+        
+        <div class="header-card">
+            <h1 class="header-title">Resume Text Content</h1>
+            <div class="header-info">
+                {% if resume.name %}
+                    <p><strong>File:</strong> {{ resume.name }}</p>
+                {% endif %}
+                {% if resume.uploaded_at %}
+                    <p><strong>Uploaded:</strong> {{ resume.uploaded_at|date:"F d, Y" }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="content-card">
+            {% if resume.extracted_text %}
+                <div class="resume-content">{{ resume.extracted_text }}</div>
+            {% else %}
+                <div class="no-content">
+                    No text content available for this resume.
+                    <br>
+                    <small>Try re-uploading the file or contact support if this issue persists.</small>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

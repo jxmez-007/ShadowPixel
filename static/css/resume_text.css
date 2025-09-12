@@ -1,0 +1,615 @@
+/* Universal box-sizing reset for consistency */
+html {
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+/* Color variables */
+:root {
+    --electric-blue: #0099ff;
+    --deep-blue: #0066cc;
+    --ice-blue: #33ccff;
+    --sky-blue: #66d9ff;
+    --midnight-blue: #001133;
+    --void-black: #000000;
+    --carbon-black: #0a0a0a;
+    --steel-black: #1a1a1a;
+    --shadow-black: #111111;
+    --success-green: #00b894;
+    --warning-orange: #fdcb6e;
+    --error-red: #e17055;
+    
+    /* Mobile-first responsive variables */
+    --container-padding: 15px;
+    --card-padding: 20px;
+    --button-padding: 16px 24px;
+    --font-size-base: 0.9rem;
+    --line-height-base: 1.6;
+}
+
+/* Body styles - Mobile First */
+body {
+    background: radial-gradient(ellipse at center, var(--midnight-blue) 0%, var(--void-black) 70%);
+    color: white;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    /* Improve text rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Enhanced Animated background particles - Mobile optimized */
+.particle-field {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    /* Reduce particles on mobile for performance */
+    opacity: 0.5;
+}
+
+.particle {
+    position: absolute;
+    background: var(--electric-blue);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--electric-blue);
+    animation: particleFloat 8s ease-in-out infinite;
+    /* Smaller particles on mobile */
+    width: 2px;
+    height: 2px;
+}
+
+@keyframes particleFloat {
+    0%, 100% { 
+        transform: translateY(0px) translateX(0px) scale(1);
+        opacity: 0.2;
+    }
+    25% { 
+        transform: translateY(-30px) translateX(15px) scale(1.1);
+        opacity: 0.6;
+    }
+    50% { 
+        transform: translateY(-50px) translateX(-10px) scale(0.9);
+        opacity: 0.3;
+    }
+    75% { 
+        transform: translateY(-20px) translateX(20px) scale(1.05);
+        opacity: 0.7;
+    }
+}
+
+/* Container - Mobile First */
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: var(--container-padding);
+    position: relative;
+    z-index: 2;
+}
+
+/* Back Button - Mobile First */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: var(--button-padding);
+    background: linear-gradient(135deg, var(--electric-blue), var(--deep-blue));
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0, 153, 255, 0.25);
+    width: 100%;
+    max-width: 280px;
+    /* Touch-friendly sizing */
+    min-height: 44px;
+    /* Prevent zoom on iOS */
+    font-size: 16px;
+}
+
+.back-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.5s ease;
+}
+
+.back-button:hover::before,
+.back-button:active::before {
+    left: 100%;
+}
+
+.back-button:hover,
+.back-button:active {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 25px rgba(0, 153, 255, 0.4);
+    background: linear-gradient(135deg, var(--ice-blue), var(--electric-blue));
+}
+
+/* Header Card - Mobile First */
+.header-card {
+    background: linear-gradient(135deg, rgba(0, 153, 255, 0.08), rgba(0, 0, 0, 0.6));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 153, 255, 0.2);
+    border-radius: 16px;
+    padding: var(--card-padding);
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 15px 40px rgba(0, 153, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.header-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(0, 153, 255, 0.15);
+    border-color: rgba(0, 153, 255, 0.3);
+}
+
+/* Header Title - Mobile First */
+.header-title {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, #ffffff 0%, var(--ice-blue) 50%, var(--electric-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    /* Better line spacing for mobile */
+    line-height: 1.2;
+}
+
+.header-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--electric-blue), var(--ice-blue));
+    border-radius: 2px;
+}
+
+/* Header Info - Mobile First */
+.header-info p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    margin: 8px 0;
+    font-weight: 500;
+    /* Better readability on mobile */
+    line-height: 1.5;
+}
+
+.header-info strong {
+    color: var(--ice-blue);
+    font-weight: 700;
+}
+
+/* Content Card - Mobile First */
+.content-card {
+    background: linear-gradient(135deg, rgba(0, 153, 255, 0.06), rgba(0, 0, 0, 0.6));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 153, 255, 0.2);
+    border-radius: 16px;
+    padding: var(--card-padding);
+    box-shadow: 0 15px 40px rgba(0, 153, 255, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.content-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(0, 153, 255, 0.15);
+    border-color: rgba(0, 153, 255, 0.3);
+}
+
+/* Resume Content - Mobile First */
+.resume-content {
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.95);
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    background: linear-gradient(135deg, rgba(0, 153, 255, 0.04), rgba(0, 0, 0, 0.3));
+    padding: 20px 15px;
+    border-radius: 12px;
+    border-left: 3px solid var(--electric-blue);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+    /* Mobile text optimization */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* No Content State - Mobile First */
+.no-content {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+    padding: 40px 20px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, rgba(0, 153, 255, 0.04), rgba(0, 0, 0, 0.3));
+    border-radius: 12px;
+    border: 2px dashed rgba(0, 153, 255, 0.25);
+    line-height: 1.5;
+}
+
+/* ===== PROGRESSIVE ENHANCEMENT FOR LARGER SCREENS ===== */
+
+/* Small Mobile Landscape: 481px – 600px */
+@media (min-width: 481px) {
+    :root {
+        --container-padding: 20px;
+        --card-padding: 25px;
+        --font-size-base: 0.95rem;
+    }
+    
+    .particle {
+        width: 3px;
+        height: 3px;
+        animation-duration: 7s;
+    }
+    
+    .back-button {
+        gap: 10px;
+        max-width: 300px;
+    }
+    
+    .resume-content {
+        font-size: 0.9rem;
+        padding: 25px 20px;
+    }
+}
+
+/* Small Tablets (Portrait): 601px – 768px */
+@media (min-width: 601px) {
+    :root {
+        --container-padding: 30px;
+        --card-padding: 30px;
+        --button-padding: 18px 28px;
+        --font-size-base: 1rem;
+    }
+    
+    .container {
+        margin: 30px auto;
+    }
+    
+    .particle-field {
+        opacity: 0.7;
+    }
+    
+    .particle {
+        width: 4px;
+        height: 4px;
+        animation-duration: 6.5s;
+    }
+    
+    .back-button {
+        width: auto;
+        max-width: none;
+        justify-content: flex-start;
+    }
+    
+    .header-card, .content-card {
+        border-radius: 18px;
+    }
+    
+    .resume-content {
+        font-size: 0.95rem;
+        padding: 28px 25px;
+    }
+    
+    .no-content {
+        padding: 50px 30px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Large Tablets (Landscape): 769px – 1024px */
+@media (min-width: 769px) {
+    :root {
+        --container-padding: 40px 20px;
+        --card-padding: 35px;
+        --button-padding: 18px 32px;
+        --font-size-base: 1rem;
+    }
+    
+    .container {
+        margin: 40px auto;
+    }
+    
+    .particle-field {
+        opacity: 0.8;
+    }
+    
+    .particle {
+        width: 4px;
+        height: 4px;
+        box-shadow: 0 0 8px var(--electric-blue);
+        animation-duration: 6s;
+    }
+    
+    .back-button {
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+    
+    .header-card, .content-card {
+        border-radius: 20px;
+    }
+    
+    .header-title::after {
+        width: 70px;
+        height: 3px;
+        bottom: -10px;
+    }
+    
+    .resume-content {
+        font-size: 1rem;
+        padding: 30px;
+        border-left: 4px solid var(--electric-blue);
+    }
+    
+    .no-content {
+        padding: 60px 20px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Small Desktops and Laptops: 1025px – 1280px */
+@media (min-width: 1025px) {
+    :root {
+        --container-padding: 40px 20px;
+        --card-padding: 40px;
+        --font-size-base: 1rem;
+        --line-height-base: 1.8;
+    }
+    
+    .particle-field {
+        opacity: 1;
+    }
+    
+    .particle {
+        width: 4px;
+        height: 4px;
+        box-shadow: 0 0 10px var(--electric-blue);
+        animation-duration: 6s;
+    }
+    
+    .back-button:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(0, 153, 255, 0.5);
+    }
+    
+    .header-card:hover, .content-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 70px rgba(0, 153, 255, 0.2);
+        border-color: rgba(0, 153, 255, 0.4);
+    }
+    
+    .header-title::after {
+        width: 80px;
+    }
+    
+    .header-info p {
+        font-size: 1.1rem;
+    }
+}
+
+/* Large Desktops: 1281px and up */
+@media (min-width: 1281px) {
+    .particle {
+        animation-duration: 6s;
+    }
+    
+    @keyframes particleFloat {
+        0%, 100% { 
+            transform: translateY(0px) translateX(0px) scale(1);
+            opacity: 0.3;
+        }
+        25% { 
+            transform: translateY(-50px) translateX(25px) scale(1.2);
+            opacity: 0.8;
+        }
+        50% { 
+            transform: translateY(-80px) translateX(-15px) scale(0.8);
+            opacity: 0.4;
+        }
+        75% { 
+            transform: translateY(-30px) translateX(35px) scale(1.1);
+            opacity: 0.9;
+        }
+    }
+}
+
+/* ===== MOBILE-SPECIFIC OPTIMIZATIONS ===== */
+
+/* Extra Small Mobile Devices: 320px – 480px */
+@media (max-width: 480px) {
+    /* Performance optimizations for mobile */
+    .particle-field {
+        display: none; /* Remove particles entirely on very small screens */
+    }
+    
+    :root {
+        --container-padding: 10px;
+        --card-padding: 15px;
+        --button-padding: 18px 24px;
+        --font-size-base: 0.85rem;
+        --line-height-base: 1.5;
+    }
+    
+    .container {
+        padding: var(--container-padding);
+        margin: 10px auto;
+    }
+    
+    .header-card, .content-card {
+        padding: var(--card-padding);
+        border-radius: 12px;
+    }
+    
+    .back-button {
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px; /* Touch target size */
+        padding: var(--button-padding);
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .header-title {
+        font-size: 1.8rem;
+        line-height: 1.1;
+        margin-bottom: 12px;
+    }
+    
+    .header-title::after {
+        width: 50px;
+        height: 2px;
+        bottom: -6px;
+    }
+    
+    .header-info p {
+        font-size: 0.9rem;
+        margin: 6px 0;
+    }
+    
+    .resume-content {
+        padding: 15px 12px;
+        font-size: 0.8rem;
+        line-height: 1.4;
+        border-left: 2px solid var(--electric-blue);
+    }
+    
+    .no-content {
+        padding: 30px 15px;
+        font-size: 1rem;
+    }
+    
+    /* Reduce animations for better performance */
+    *, *::before, *::after {
+        animation-duration: 0.3s !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* Ultra-small screens */
+@media (max-width: 320px) {
+    :root {
+        --container-padding: 8px;
+        --card-padding: 12px;
+        --font-size-base: 0.8rem;
+    }
+    
+    .header-title {
+        font-size: 1.5rem;
+    }
+    
+    .resume-content {
+        padding: 12px 10px;
+        font-size: 0.75rem;
+    }
+    
+    .back-button {
+        padding: 16px 20px;
+    }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .particle-field {
+        display: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .header-card, .content-card {
+        border-color: var(--electric-blue);
+        border-width: 2px;
+    }
+    
+    .resume-content {
+        border-left-width: 4px;
+    }
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(15px)) {
+    .header-card, .content-card {
+        background: rgba(0, 0, 0, 0.8);
+    }
+}
+
+/* Fallback for browsers that don't support text gradients */
+@supports not (-webkit-background-clip: text) {
+    .header-title {
+        color: #ffffff;
+    }
+}
+
+/* Dark mode support (if user prefers dark) */
+@media (prefers-color-scheme: dark) {
+    /* Already optimized for dark theme */
+}
+
+/* Print styles */
+@media print {
+    .particle-field,
+    .back-button {
+        display: none;
+    }
+    
+    .header-card, .content-card {
+        background: white;
+        color: black;
+        border: 1px solid #ccc;
+    }
+    
+    .header-title {
+        color: black;
+    }
+    
+    .resume-content {
+        background: #f9f9f9;
+        color: black;
+    }
+}
