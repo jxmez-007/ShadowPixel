@@ -82,3 +82,5 @@ watchfiles==1.1.0
 websockets==15.0.1
 whitenoise==6.9.0
 yarl==1.20.1
+gunicorn==21.2.0
+gunicorn==21.2.0 
