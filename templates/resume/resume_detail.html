@@ -4,16 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Details</title>
+    <title>Resume Details - ShadowPixel</title>
+    <meta name="description" content="View detailed resume information and AI analysis">
+    
     {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/resume_detail.css' %}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="/">🏠 Home</a></li>
-            <li><a href="/upload/">📤 Upload</a></li>
-            <li><a href="/resumes/">📄 Resumes</a></li>
+    <!-- Background Elements -->
+    <div class="particle-field"></div>
+    
+    <!-- Navigation with Mobile Toggle -->
+    <nav class="navigation" aria-label="Main navigation">
+        <!-- Hamburger Toggle Button -->
+        <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <!-- Navigation Menu -->
+        <ul class="nav-menu">
+            <li><a href="{% url 'resume:index' %}">🏠 Home</a></li>
+            <li><a href="{% url 'resume:upload_resume' %}">📤 Upload</a></li>
+            <li><a href="{% url 'resume:uploaded_resumes' %}">📄 Resumes</a></li>
+            <li><a href="{% url 'resume:statistics' %}">📊 Stats</a></li>
+            <li><a href="{% url 'resume:help' %}">❓ Help</a></li>
         </ul>
     </nav>
 
@@ -69,25 +93,23 @@
             </div>
             {% endif %}
 
-            <!-- ✨ NEW: AI-Generated Summary Section -->
+            <!-- AI-Generated Summary Section -->
             <div class="info-box">
                 <h3>🤖 AI-Generated Summary</h3>
                 {% if resume.text_summary %}
-                    <div class="summary-content" style="background: #1a1f2e; padding: 15px; border-left: 4px solid #007bff; border-radius: 4px; margin-top: 10px;">
-                        <p style="margin: 0; line-height: 1.6; color: #e9ecef;">{{ resume.text_summary|linebreaks }}</p>
+                    <div class="summary-content">
+                        <p>{{ resume.text_summary|linebreaks }}</p>
                         {% if ai_summary_available %}
                             <div style="margin-top: 10px;">
-                                <span class="summary-badge" style="background: #007bff; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
-                                    ✨ Powered by AI
-                                </span>
+                                <span class="summary-badge">✨ Powered by AI</span>
                             </div>
                         {% endif %}
                     </div>
                 {% else %}
-                    <div class="summary-placeholder" style="text-align: center; padding: 20px; color: #6c757d; background: #1a1f2e; border-radius: 4px; margin-top: 10px;">
+                    <div class="summary-placeholder">
                         <p style="margin: 0 0 15px 0;">📄 No AI summary available yet.</p>
                         {% if resume.status == 'completed' %}
-                            <a href="{% url 'resume:reprocess_resume' resume.pk %}" class="btn" style="background: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                            <a href="{% url 'resume:reprocess_resume' resume.pk %}" class="btn btn-primary">
                                 🚀 Generate AI Summary
                             </a>
                         {% elif resume.status == 'processing' %}
@@ -99,15 +121,15 @@
                 {% endif %}
             </div>
 
-            <!-- ✨ NEW: Extracted Text Section (Optional - for debugging) -->
+            <!-- Extracted Text Section -->
             {% if resume.extracted_text %}
             <div class="info-box">
                 <h3>📝 Extracted Content</h3>
-                <div style="max-height: 200px; overflow-y: auto; background: #1a1f2e; padding: 15px; border-radius: 4px; margin-top: 10px;">
-                    <pre style="color: #e9ecef; font-size: 0.9em; white-space: pre-wrap; margin: 0;">{{ resume.extracted_text|truncatewords:100 }}</pre>
+                <div class="extracted-text-container">
+                    <pre>{{ resume.extracted_text|truncatewords:100 }}</pre>
                     {% if resume.extracted_text|length > 500 %}
                         <p style="text-align: center; margin-top: 10px;">
-                            <a href="{% url 'resume:resume_text' resume.pk %}" class="btn" style="background: #6c757d; color: white; padding: 4px 12px; text-decoration: none; border-radius: 4px; font-size: 0.8em;">
+                            <a href="{% url 'resume:resume_text' resume.pk %}" class="btn btn-secondary">
                                 View Full Text
                             </a>
                         </p>
@@ -116,21 +138,19 @@
             </div>
             {% endif %}
 
-            <!-- ✨ NEW: Skills Section -->
+            <!-- Skills Section -->
             {% if resume.skills %}
             <div class="info-box">
                 <h3>💡 Skills</h3>
-                <div style="margin-top: 10px;">
+                <div class="skills-container">
                     {% for skill in resume.skills|split:"," %}
-                        <span style="background: #007bff; color: white; padding: 4px 8px; margin: 2px; border-radius: 12px; display: inline-block; font-size: 0.9em;">
-                            {{ skill|trim }}
-                        </span>
+                        <span class="skill-badge">{{ skill|trim }}</span>
                     {% endfor %}
                 </div>
             </div>
             {% endif %}
 
-            <!-- ✨ NEW: GitHub Data Section -->
+            <!-- GitHub Data Section -->
             {% if resume.github_data %}
             <div class="info-box">
                 <h3>🐙 GitHub Information</h3>
@@ -150,20 +170,18 @@
                 {% endwith %}
                 
                 {% if resume.github_data.repositories %}
-                    <h4 style="margin-top: 15px; color: #007bff;">📚 Recent Repositories</h4>
-                    <ul style="list-style: none; padding: 0;">
+                    <h4 class="repo-heading">📚 Recent Repositories</h4>
+                    <ul class="repo-list">
                         {% for repo in resume.github_data.repositories|slice:":5" %}
-                            <li style="margin: 8px 0; padding: 8px; background: #1a1f2e; border-radius: 4px;">
+                            <li>
                                 <strong>
-                                    <a href="{{ repo.html_url }}" target="_blank" style="color: #007bff; text-decoration: none;">
-                                        {{ repo.name }}
-                                    </a>
+                                    <a href="{{ repo.html_url }}" target="_blank">{{ repo.name }}</a>
                                 </strong>
                                 {% if repo.description %}
-                                    <br><small style="color: #6c757d;">{{ repo.description|truncatewords:15 }}</small>
+                                    <br><small>{{ repo.description|truncatewords:15 }}</small>
                                 {% endif %}
                                 {% if repo.language %}
-                                    <br><span style="background: #6c757d; color: white; padding: 2px 6px; border-radius: 8px; font-size: 0.7em;">{{ repo.language }}</span>
+                                    <br><span class="language-badge">{{ repo.language }}</span>
                                 {% endif %}
                             </li>
                         {% endfor %}
@@ -172,19 +190,17 @@
             </div>
             {% endif %}
 
-            <!-- ✨ NEW: Processing Logs Section -->
+            <!-- Processing Logs Section -->
             {% if processing_logs %}
             <div class="info-box">
                 <h3>📊 Processing History</h3>
-                <div style="max-height: 200px; overflow-y: auto; margin-top: 10px;">
+                <div class="processing-log">
                     {% for log in processing_logs %}
-                        <div style="margin: 8px 0; padding: 8px; background: #1a1f2e; border-radius: 4px; border-left: 3px solid {% if log.status == 'completed' %}#28a745{% elif log.status == 'failed' %}#dc3545{% else %}#ffc107{% endif %};">
-                            <strong style="color: {% if log.status == 'completed' %}#28a745{% elif log.status == 'failed' %}#dc3545{% else %}#ffc107{% endif %};">
-                                {{ log.step|title }}
-                            </strong>
-                            <small style="color: #6c757d; margin-left: 10px;">{{ log.created_at|date:"H:i:s" }}</small>
+                        <div class="log-entry log-{{ log.status }}">
+                            <strong>{{ log.step|title }}</strong>
+                            <small>{{ log.created_at|date:"H:i:s" }}</small>
                             {% if log.message %}
-                                <br><small style="color: #e9ecef;">{{ log.message }}</small>
+                                <br><small>{{ log.message }}</small>
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -192,29 +208,29 @@
             </div>
             {% endif %}
 
-            <!-- ✨ NEW: Action Buttons -->
-            <div class="info-box" style="text-align: center;">
+            <!-- Action Buttons -->
+            <div class="info-box action-buttons">
                 <h3>🔧 Actions</h3>
-                <div style="margin-top: 15px;">
+                <div class="button-grid">
                     {% if resume.status == 'completed' %}
-                        <a href="{% url 'resume:reprocess_resume' resume.pk %}" class="btn" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 5px;">
+                        <a href="{% url 'resume:reprocess_resume' resume.pk %}" class="btn btn-success">
                             🔄 Reprocess Resume
                         </a>
                     {% endif %}
                     
                     {% if resume.github_username %}
-                        <a href="{% url 'resume:resume_github_sync' resume.pk %}" class="btn" style="background: #6f42c1; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 5px;">
+                        <a href="{% url 'resume:resume_github_sync' resume.pk %}" class="btn btn-purple">
                             🔄 Sync GitHub
                         </a>
                     {% endif %}
                     
                     {% if resume.resume_file %}
-                        <a href="{% url 'resume:download_resume' resume.pk %}" class="btn" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 5px;">
+                        <a href="{% url 'resume:download_resume' resume.pk %}" class="btn btn-primary">
                             📥 Download File
                         </a>
                     {% endif %}
                     
-                    <a href="{% url 'resume:delete_resume' resume.pk %}" class="btn" style="background: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin: 5px;" onclick="return confirm('Are you sure you want to delete this resume?')">
+                    <a href="{% url 'resume:delete_resume' resume.pk %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this resume?')">
                         🗑️ Delete Resume
                     </a>
                 </div>
@@ -228,10 +244,143 @@
             </div>
         {% endif %}
         
-        <div style="margin-top: 30px; text-align: center;">
-            <a href="/resumes/" class="btn">← Back to Resume List</a>
-            <a href="/" class="btn">🏠 Home</a>
+        <div class="back-buttons">
+            <a href="{% url 'resume:uploaded_resumes' %}" class="btn btn-secondary">← Back to Resume List</a>
+            <a href="{% url 'resume:index' %}" class="btn btn-secondary">🏠 Home</a>
         </div>
     </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate particles
+            const particleField = document.querySelector('.particle-field');
+            if (particleField) {
+                for(let i = 0; i < 15; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.position = 'fixed';
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    
+                    const size = Math.random() * 6 + 2;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.background = '#007bff';
+                    particle.style.borderRadius = '50%';
+                    particle.style.animationDelay = `${Math.random() * 6}s`;
+                    particle.style.animation = 'float 6s ease-in-out infinite';
+                    particle.style.zIndex = '-1';
+                    particle.style.opacity = '0.3';
+                    
+                    particleField.appendChild(particle);
+                }
+            }
+
+            // Mobile Menu Toggle
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                    
+                    if (navMenu.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    });
+                });
+                
+                document.addEventListener('click', function(event) {
+                    const isClickInsideMenu = navMenu.contains(event.target);
+                    const isClickOnToggle = menuToggle.contains(event.target);
+                    
+                    if (!isClickInsideMenu && !isClickOnToggle && navMenu.classList.contains('active')) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape' && navMenu.classList.contains('active')) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+
+            // Animate info boxes on scroll
+            const observeBoxes = () => {
+                const boxes = document.querySelectorAll('.info-box');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry, index) => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                entry.target.style.opacity = '1';
+                                entry.target.style.transform = 'translateY(0)';
+                            }, index * 100);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                });
+                
+                boxes.forEach(box => {
+                    box.style.opacity = '0';
+                    box.style.transform = 'translateY(20px)';
+                    box.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    observer.observe(box);
+                });
+            };
+            
+            observeBoxes();
+        });
+
+        // Particle animation keyframes
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { 
+                    transform: translateY(0px) translateX(0px) scale(1);
+                    opacity: 0.3;
+                }
+                25% { 
+                    transform: translateY(-30px) translateX(15px) scale(1.1);
+                    opacity: 0.6;
+                }
+                50% { 
+                    transform: translateY(-50px) translateX(-10px) scale(0.9);
+                    opacity: 0.4;
+                }
+                75% { 
+                    transform: translateY(-20px) translateX(20px) scale(1.05);
+                    opacity: 0.7;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

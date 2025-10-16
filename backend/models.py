@@ -324,7 +324,7 @@ class Resume(models.Model):
     
     def __str__(self) -> str:
         """String representation of Resume instance."""
-        return f"{self.github_username} - {self.get_status_display()}"
+        return f"{self.github_username} - {self.get_status_display()}" # type: ignore
     
     def __repr__(self) -> str:
         """Developer-friendly representation."""
@@ -647,7 +647,7 @@ class ResumeProcessingLog(models.Model):
     
     def __str__(self) -> str:
         """String representation of ResumeProcessingLog instance."""
-        return f"{self.resume.github_username} - {self.step} - {self.get_status_display()}"
+        return f"{self.resume.github_username} - {self.step} - {self.get_status_display()}" # type: ignore
     
     def __repr__(self) -> str:
         """Developer-friendly representation."""

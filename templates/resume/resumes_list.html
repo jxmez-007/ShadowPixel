@@ -4,20 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resumes List - ShadowPixel</title>
+    <meta name="description" content="View all uploaded resumes on ShadowPixel">
+    
     {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/uploaded_resumes.css' %}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="navigation">
+    <!-- Background Particles -->
+    <div class="particle-field"></div>
+    
+    <!-- Navigation with Mobile Toggle -->
+    <nav class="navigation" aria-label="Main navigation">
+        <!-- Hamburger Toggle Button -->
+        <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <!-- Navigation Menu -->
         <ul class="nav-menu">
             <li><a href="{% url 'resume:index' %}">Home</a></li>
             <li><a href="{% url 'resume:upload_resume' %}">Upload</a></li>
-            <li><a href="{% url 'resume:uploaded_resumes' %}">Resumes</a></li>
+            <li><a href="{% url 'resume:uploaded_resumes' %}" class="active">Resumes</a></li>
             <li><a href="{% url 'resume:statistics' %}">Stats</a></li>
             <li><a href="{% url 'resume:help' %}">Help</a></li>
         </ul>
     </nav>
 
+    <!-- Main Content -->
     <div class="hero-container">
         <div class="hero-content">
             <h1 class="main-title">Uploaded Resumes</h1>
@@ -26,12 +49,14 @@
                 <div class="upload-section">
                     <div class="form-card">
                         {% for resume in resumes %}
-                            <div style="padding: 15px; margin: 10px 0; background: rgba(0,153,255,0.05); border-radius: 10px;">
+                            <div>
                                 <h3>{{ resume.github_username }}</h3>
                                 <p>File: {{ resume.original_filename }}</p>
-                                <p>Status: {{ resume.status|default:"Uploaded" }}</p>
+                                <p>Status: {{ resume.status|title|default:"Uploaded" }}</p>
                                 <p>Date: {{ resume.created_at|date:"M d, Y H:i"|default:"Recently" }}</p>
-                                <a href="{% url 'resume:resume_detail' resume.pk %}" class="btn-secondary">View Details</a>
+                                <a href="{% url 'resume:resume_detail' resume.pk %}" class="btn-secondary">
+                                    <span>👁️</span> View Details
+                                </a>
                             </div>
                         {% endfor %}
                     </div>
@@ -48,5 +73,133 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate animated particles
+            const particleField = document.querySelector('.particle-field');
+            if (particleField) {
+                for(let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.position = 'fixed';
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    
+                    const size = Math.random() * 6 + 2;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.animationDelay = `${Math.random() * 6}s`;
+                    particle.style.zIndex = '-1';
+                    
+                    particleField.appendChild(particle);
+                }
+            }
+
+            // Mobile Menu Toggle Functionality
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (menuToggle && navMenu) {
+                // Toggle menu on hamburger button click
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // Toggle active states
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                    
+                    // Prevent body scroll when menu is open
+                    if (navMenu.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                // Close menu when clicking on a navigation link
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    });
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    const isClickInsideMenu = navMenu.contains(event.target);
+                    const isClickOnToggle = menuToggle.contains(event.target);
+                    
+                    if (!isClickInsideMenu && !isClickOnToggle && navMenu.classList.contains('active')) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                // Close menu on escape key press
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape' && navMenu.classList.contains('active')) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+
+            // Add smooth scroll to top functionality
+            const heroContainer = document.querySelector('.hero-container');
+            if (heroContainer) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 100) {
+                        heroContainer.style.opacity = '1';
+                    }
+                });
+            }
+
+            // Animate resume cards on scroll (for longer lists)
+            const observeCards = () => {
+                const cards = document.querySelectorAll('.form-card > div');
+                
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry, index) => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                entry.target.style.opacity = '1';
+                                entry.target.style.transform = 'translateY(0)';
+                            }, index * 100);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+                
+                cards.forEach(card => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    observer.observe(card);
+                });
+            };
+            
+            // Only animate if there are resume cards
+            const resumeCards = document.querySelectorAll('.form-card > div');
+            if (resumeCards.length > 0) {
+                observeCards();
+            }
+        });
+    </script>
 </body>
 </html>

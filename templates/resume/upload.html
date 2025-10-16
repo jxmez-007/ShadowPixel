@@ -15,7 +15,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <!-- Background Elements -->
@@ -26,8 +25,18 @@
         <div class="geo-shape"></div>
     </div>
 
-    <!-- Navigation -->
+    <!-- Navigation with Mobile Toggle - FIXED -->
     <nav class="navigation" aria-label="Main navigation">
+        <!-- Hamburger Toggle Button -->
+        <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+        
+        <!-- Navigation Menu -->
         <ul class="nav-menu">
             <li><a href="{% url 'resume:index' %}">Home</a></li>
             <li><a href="{% url 'resume:upload_resume' %}" class="active">Upload</a></li>
@@ -109,21 +118,69 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Enhanced particle generation
             const particleField = document.querySelector('.particle-field');
-            for(let i = 0; i < 20; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.position = 'fixed';
-                p.style.top = `${Math.random() * 100}%`;
-                p.style.left = `${Math.random() * 100}%`;
-                const size = Math.random() * 6 + 2;
-                p.style.width = `${size}px`;
-                p.style.height = `${size}px`;
-                p.style.background = '#0099ff';
-                p.style.borderRadius = '50%';
-                p.style.animationDelay = `${Math.random() * 6}s`;
-                p.style.animation = 'float 6s ease-in-out infinite';
-                p.style.zIndex = '-1';
-                particleField.appendChild(p);
+            if (particleField) {
+                for(let i = 0; i < 20; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    p.style.position = 'fixed';
+                    p.style.top = `${Math.random() * 100}%`;
+                    p.style.left = `${Math.random() * 100}%`;
+                    const size = Math.random() * 6 + 2;
+                    p.style.width = `${size}px`;
+                    p.style.height = `${size}px`;
+                    p.style.background = '#0099ff';
+                    p.style.borderRadius = '50%';
+                    p.style.animationDelay = `${Math.random() * 6}s`;
+                    p.style.animation = 'float 6s ease-in-out infinite';
+                    p.style.zIndex = '-1';
+                    particleField.appendChild(p);
+                }
+            }
+
+            // Mobile Menu Toggle - FIXED
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (menuToggle && navMenu) {
+                // Toggle menu on button click
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                    this.setAttribute('aria-expanded', !isExpanded);
+                    this.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                    
+                    // Prevent body scroll when menu is open
+                    if (navMenu.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                });
+                
+                // Close menu when clicking on a link
+                const navLinks = navMenu.querySelectorAll('a');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    });
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(event) {
+                    const isClickInsideMenu = navMenu.contains(event.target);
+                    const isClickOnToggle = menuToggle.contains(event.target);
+                    
+                    if (!isClickInsideMenu && !isClickOnToggle && navMenu.classList.contains('active')) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                        document.body.style.overflow = '';
+                    }
+                });
             }
 
             // Form and drag-drop functionality
@@ -176,11 +233,16 @@
             }
 
             function updateFileDisplay(file) {
+                if (!fileDropZone) return;
                 const fileIcon = fileDropZone.querySelector('.file-icon');
                 const fileParagraph = fileDropZone.querySelector('p');
                 
-                fileParagraph.textContent = `Selected: ${file.name}`;
-                fileIcon.textContent = getFileIcon(file.name);
+                if (fileParagraph) {
+                    fileParagraph.textContent = `Selected: ${file.name}`;
+                }
+                if (fileIcon) {
+                    fileIcon.textContent = getFileIcon(file.name);
+                }
             }
 
             function getFileIcon(filename) {

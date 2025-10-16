@@ -35,19 +35,80 @@ body {
   min-height: 100vh;
 }
 
-/* Navigation */
+/* Navigation - UPDATED FOR MOBILE */
 .navigation {
-  position: relative;
-  width: 100%;
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1), rgba(0, 0, 0, 0.8));
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(0, 153, 255, 0.2);
+  border-radius: 50px;
+  padding: 15px 35px;
   z-index: 1000;
-  padding-top: 20px;
+}
+
+/* Hamburger Menu Button - Hidden by Default */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 1001;
+}
+
+.hamburger {
+  display: block;
+  width: 28px;
+  height: 20px;
+  position: relative;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: #fff;
+  border-radius: 3px;
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+.hamburger span:nth-child(1) {
+  top: 0;
+}
+
+.hamburger span:nth-child(2) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.hamburger span:nth-child(3) {
+  bottom: 0;
+}
+
+/* Hamburger Animation when Active */
+.menu-toggle.active .hamburger span:nth-child(1) {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.menu-toggle.active .hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.active .hamburger span:nth-child(3) {
+  bottom: 50%;
+  transform: translateY(50%) rotate(-45deg);
 }
 
 .nav-menu {
   display: flex;
   justify-content: center;
   gap: 35px;
-  margin-top: 30px;
+  margin: 0;
   list-style: none;
   text-align: center;
   padding: 0;
@@ -135,7 +196,6 @@ body {
   position: relative;
 }
 
-/* Fallback for browsers that don't support text gradients */
 @supports not (-webkit-background-clip: text) {
   .main-title {
     color: #ffffff;
@@ -389,186 +449,82 @@ body {
   }
 }
 
-/* Responsive Design */
+/* TABLET MOBILE RESPONSIVE - 768px and below */
 @media (max-width: 768px) {
-  .nav-menu {
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    padding: 0 15px;
-  }
-  
-  .nav-menu a {
-    padding: 8px 15px;
-    font-size: 0.9rem;
-  }
-  
-  .hero-container {
-    padding: 80px 15px 60px;
-    min-height: 90vh;
-  }
-  
-  .hero-content {
-    max-width: 100%;
-  }
-  
-  .form-card {
-    padding: 30px 20px;
-  }
-  
-  .form-card > div {
-    padding: 15px !important;
-    margin: 12px 0 !important;
-  }
-  
-  .main-title {
-    font-size: 2.5rem;
-    margin-bottom: 30px;
-  }
-  
-  .form-card h3 {
-    font-size: 1.2rem;
-  }
-  
-  .form-card p {
-    font-size: 0.95rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-  
-  .btn-primary, .btn-secondary {
-    width: 100%;
-    margin: 10px 0;
-    padding: 16px;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .nav-menu {
-    gap: 15px;
-    margin-top: 15px;
-    flex-direction: column;
+  .navigation {
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    transform: none;
+    width: calc(100% - 30px);
+    padding: 15px 20px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
   }
   
-  .nav-menu li {
-    margin: 5px 0;
+  /* Show hamburger toggle button */
+  .menu-toggle {
+    display: block;
+    margin-left: auto;
   }
   
-  .hero-container {
-    padding: 60px 10px 40px;
-  }
-  
-  .form-card {
-    padding: 25px 15px;
-    margin: 20px 0;
-  }
-  
-  .main-title {
-    font-size: 2rem;
-    margin-bottom: 25px;
-  }
-  
-  .main-title::after {
-    width: 60px;
-  }
-  
-  .form-card h3 {
-    font-size: 1.1rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-  
-  .form-card p {
-    font-size: 0.9rem;
-  }
-  
-  .upload-section {
-    margin-top: 30px;
-  }
-}
-
-/* Accessibility improvements */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .nav-menu a {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-  
-  .form-card {
-    border: 2px solid rgba(0, 153, 255, 0.5);
-  }
-  
-  .btn-primary, .btn-secondary {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-  }
-}
-/* ENHANCED MOBILE OPTIMIZATIONS FOR UPLOADED RESUMES */
-
-/* Large tablets */
-@media (max-width: 1024px) {
-  .hero-container {
-    padding: 100px 20px 70px;
-  }
-  
-  .form-card {
-    padding: 35px 25px;
-  }
-  
-  .form-card > div {
-    padding: 18px !important;
-    margin: 12px 0 !important;
-  }
-  
-  .main-title {
-    font-size: 3.5rem;
-  }
-}
-
-/* Standard tablets - Enhanced */
-@media (max-width: 768px) {
-  /* Hide particles for better performance */
-  .particle-field {
-    display: none;
-  }
-  
+  /* Hide menu by default on tablet/mobile */
   .nav-menu {
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    padding: 0 15px;
+    position: fixed;
+    top: 80px;
+    left: 15px;
+    right: 15px;
+    background: linear-gradient(135deg, rgba(0, 153, 255, 0.15), rgba(0, 0, 0, 0.95));
+    backdrop-filter: blur(30px);
+    border: 1px solid rgba(0, 153, 255, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    flex-direction: column;
+    gap: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 10px 40px rgba(0, 153, 255, 0.2);
+  }
+  
+  /* Show menu when active */
+  .nav-menu.active {
+    max-height: 500px;
+    opacity: 1;
+    padding: 20px;
   }
   
   .nav-menu a {
-    padding: 8px 15px;
-    font-size: 0.9rem;
+    display: block;
+    padding: 15px 20px;
+    font-size: 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(0, 153, 255, 0.1);
+    border-radius: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .nav-menu a:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  
+  .nav-menu a:hover {
+    background: rgba(0, 153, 255, 0.1);
+    transform: translateX(5px);
   }
   
   .hero-container {
-    padding: 80px 15px 60px;
+    padding: 100px 15px 60px;
     min-height: 90vh;
-  }
-  
-  .hero-content {
-    max-width: 100%;
   }
   
   .form-card {
     padding: 30px 20px;
-    backdrop-filter: blur(15px); /* Reduce blur for performance */
+    backdrop-filter: blur(15px);
   }
   
   .form-card > div {
@@ -598,74 +554,57 @@ body {
     margin: 10px 0;
     padding: 16px;
     justify-content: center;
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: 16px;
   }
 }
 
-/* Small tablets in portrait */
-@media (max-width: 600px) {
-  .nav-menu {
-    gap: 15px;
-    margin-top: 15px;
-  }
-  
-  .nav-menu a {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-  }
-  
-  .hero-container {
-    padding: 70px 12px 50px;
-  }
-  
-  .main-title {
-    font-size: 2.2rem;
-    margin-bottom: 35px;
-  }
-  
-  .main-title::after {
-    width: 70px;
-  }
-  
-  .form-card {
-    padding: 25px 18px;
-  }
-  
-  .form-card > div {
-    padding: 14px !important;
-    margin: 10px 0 !important;
-  }
-  
-  .form-card h3 {
-    font-size: 1.1rem;
-  }
-  
-  .form-card p {
-    font-size: 0.9rem;
-  }
-}
-
-/* Mobile phones - Enhanced */
+/* MOBILE RESPONSIVE - 480px and below */
 @media (max-width: 480px) {
-  .nav-menu {
-    gap: 15px;
-    margin-top: 15px;
-    flex-direction: column;
-    align-items: center;
+  .particle-field {
+    display: none;
   }
   
-  .nav-menu li {
-    margin: 5px 0;
+  .navigation {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    padding: 12px 15px;
+    border-radius: 15px;
+  }
+  
+  .menu-toggle {
+    padding: 8px;
+  }
+  
+  .hamburger {
+    width: 24px;
+    height: 18px;
+  }
+  
+  .hamburger span {
+    height: 2.5px;
+  }
+  
+  .nav-menu {
+    top: 65px;
+    left: 10px;
+    right: 10px;
+    padding: 15px;
+    border-radius: 15px;
+  }
+  
+  .nav-menu.active {
+    padding: 15px;
   }
   
   .nav-menu a {
-    min-height: 44px; /* Touch-friendly */
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 20px;
-    width: 140px;
-    font-size: 16px; /* Prevents iOS zoom */
   }
   
   /* Remove hover effects on mobile */
@@ -679,7 +618,7 @@ body {
   }
   
   .hero-container {
-    padding: 60px 10px 40px;
+    padding: 80px 10px 40px;
   }
   
   .form-card {
@@ -711,17 +650,9 @@ body {
     margin-bottom: 12px;
   }
   
-  .form-card h3::before {
-    font-size: 1rem;
-  }
-  
   .form-card p {
     font-size: 0.9rem;
     margin-bottom: 8px;
-  }
-  
-  .form-card p::before {
-    font-size: 0.9rem;
   }
   
   .btn-primary, .btn-secondary {
@@ -729,139 +660,21 @@ body {
     margin: 8px 0;
     padding: 16px;
     min-height: 44px;
-    font-size: 16px; /* Prevents iOS zoom */
+    font-size: 16px;
   }
   
   .upload-section {
     margin-top: 30px;
   }
-  
-  /* Empty state optimization */
-  .form-card > p {
-    font-size: 1.1rem;
-    padding: 15px;
-    margin-bottom: 20px;
-  }
 }
 
-/* Small mobile phones */
-@media (max-width: 375px) {
-  .hero-container {
-    padding: 50px 8px 35px;
-  }
-  
-  .form-card {
-    padding: 20px 12px;
-    margin: 15px 0;
-  }
-  
-  .main-title {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-  }
-  
-  .form-card > div {
-    padding: 14px !important;
-    margin: 10px 0 !important;
-  }
-  
-  .form-card h3 {
-    font-size: 1rem;
-  }
-  
-  .form-card p {
-    font-size: 0.85rem;
-  }
-  
-  .nav-menu a {
-    width: 120px;
-    font-size: 15px;
-  }
-  
-  .btn-primary, .btn-secondary {
-    padding: 15px;
-    font-size: 15px;
-  }
-}
-
-/* Landscape orientation for mobile */
-@media (max-width: 768px) and (orientation: landscape) {
-  .hero-container {
-    padding: 40px 15px 30px;
-    min-height: 80vh;
-  }
-  
-  .nav-menu {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-  
-  .main-title {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  
-  .form-card {
-    padding: 20px 25px;
-  }
-}
-
-/* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
-  .nav-menu a,
-  .btn-primary,
-  .btn-secondary {
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Remove all hover effects on touch devices */
-  .nav-menu a:hover,
-  .form-card:hover,
-  .form-card > div:hover,
-  .btn-primary:hover,
-  .btn-secondary:hover {
-    transform: none;
-    box-shadow: inherit;
-    background: inherit;
-  }
-  
-  /* Better touch targets for resume cards */
-  .form-card > div {
-    min-height: 60px;
-    cursor: pointer;
-  }
-}
-
-/* High contrast mode support - Mobile optimized */
-@media (prefers-contrast: high) and (max-width: 480px) {
-  .nav-menu a {
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    margin: 2px 0;
-  }
-  
-  .form-card {
-    border: 2px solid rgba(0, 153, 255, 0.7);
-  }
-  
-  .form-card > div {
-    border: 2px solid rgba(0, 153, 255, 0.5) !important;
-  }
-  
-  .btn-primary, .btn-secondary {
-    border: 2px solid rgba(255, 255, 255, 0.5);
-  }
-}
-
-/* Reduced motion for mobile performance */
-@media (prefers-reduced-motion: reduce) and (max-width: 480px) {
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0s !important;
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.1s !important;
+    transition-duration: 0.01ms !important;
   }
 }

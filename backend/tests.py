@@ -15,6 +15,11 @@ import os
 import tempfile
 from datetime import datetime, timedelta
 from .models import Resume, ResumeProcessingLog
+from typing import TYPE_CHECKING
+
+# Type checking imports - these help Pylance understand the types
+if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
 
 
 class ResumeModelTest(TestCase):
@@ -433,14 +438,14 @@ class ResumeModelTest(TestCase):
                 status=status
             )
         
-        # Test manager methods
-        self.assertEqual(Resume.objects.pending().count(), 1)
-        self.assertEqual(Resume.objects.completed().count(), 1)
-        self.assertEqual(Resume.objects.failed().count(), 1)
-        self.assertEqual(Resume.objects.by_status('processing').count(), 1)
+        # Test manager methods - type: ignore comments suppress Pylance warnings
+        self.assertEqual(Resume.objects.pending().count(), 1)  # type: ignore[attr-defined]
+        self.assertEqual(Resume.objects.completed().count(), 1)  # type: ignore[attr-defined]
+        self.assertEqual(Resume.objects.failed().count(), 1)  # type: ignore[attr-defined]
+        self.assertEqual(Resume.objects.by_status('processing').count(), 1)  # type: ignore[attr-defined]
         
         # Test recent method
-        recent_resumes = Resume.objects.recent(days=1)
+        recent_resumes = Resume.objects.recent(days=1)  # type: ignore[attr-defined]
         self.assertEqual(recent_resumes.count(), 4)  # All should be recent
 
 
@@ -516,8 +521,8 @@ class ResumeProcessingLogTest(TestCase):
             status="failed"
         )
         
-        # Test reverse relationship
-        logs = self.resume.processing_logs.all()
+        # Test reverse relationship - type: ignore suppresses Pylance warning
+        logs = self.resume.processing_logs.all()  # type: ignore[attr-defined]
         self.assertEqual(logs.count(), 3)
         self.assertIn(log1, logs)
         self.assertIn(log2, logs)
