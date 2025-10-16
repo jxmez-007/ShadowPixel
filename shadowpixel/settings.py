@@ -77,7 +77,7 @@ if allowed_hosts_env:
 elif IS_DEVELOPMENT:
     ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0", "testserver"]
 elif IS_TESTING:
-    ALLOWED_HOSTS = ["testserver", "127.0.0.1", "localhost"]
+    ALLOWED_HOSTS = ["testserver", "127.0.0.1", "localhost","testserver","shadowpixel-3.orender.com",.orender.com]
 else:
     print(f"Warning: No ALLOWED_HOSTS configured for {DJANGO_ENV} environment")
 
