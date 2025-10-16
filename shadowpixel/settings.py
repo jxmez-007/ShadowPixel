@@ -69,21 +69,17 @@ if IS_PRODUCTION and DEBUG:
 if IS_STAGING and DEBUG:
     print("Warning: DEBUG is True in staging environment")
 
-ALLOWED_HOSTS: List[str] = []
-allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "")
+# ALLOWED_HOSTS configuration
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost", 
+    "0.0.0.0",
+    "testserver",
+    "shadowpixel-3.onrender.com",
+    ".onrender.com",
+]
 
-if allowed_hosts_env:
-    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(",") if host.strip()]
-elif IS_DEVELOPMENT:
-    ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0", "testserver"]
-elif IS_TESTING:
-    ALLOWED_HOSTS = ["testserver", "127.0.0.1", "localhost"]
-else:
-    print(f"Warning: No ALLOWED_HOSTS configured for {DJANGO_ENV} environment")
-
-if os.getenv('RENDER'):
-    ALLOWED_HOSTS.extend(['shadowpixel-3.orender.com', '.orender.com'])
-
+# Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
